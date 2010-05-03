@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.neo4j</groupId>
+    <artifactId>parent-pom</artifactId>
+    <version>6</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.neo4j</groupId>
+  <artifactId>neo4j-remote-graphdb</artifactId>
+  <version>0.6</version>
+  <name>Neo4j - Remote Graph Database</name>
+  <description></description>
+  <url>http://components.neo4j.org/${project.artifactId}/</url>
+
+  <properties>
+    <bundle.namespace>org.neo4j.remote</bundle.namespace>
+    <short-name>remote-graphdb</short-name>
+  </properties>
+ 
+  <packaging>bundle</packaging>
+
+  <scm>
+    <connection>
+      scm:svn:https://svn.neo4j.org/components/${short-name}/trunk
+    </connection>
+    <url>https://trac.neo4j.org/browser/components/${short-name}</url>
+  </scm>
+
+  <issueManagement>
+    <system>Trac</system>
+    <url>https://trac.neo4j.org/query?status=assigned&amp;status=new&amp;status=reopened&amp;component=${short-name}</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <id>tobias</id>
+      <name>Tobias Ivarsson</name>
+      <email>tobias.ivarsson [at] neotechnology.com</email>
+      <timezone>+1</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-index</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>idlj-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <compiler>idlj</compiler>
+          <sources>
+            <source>
+              <packagePrefixes>
+                <packagePrefix>
+                  <type>remote_neo4j</type>
+                  <prefix>org.neo4j.remote.impl.corba</prefix>
+                </packagePrefix>
+              </packagePrefixes>
+              <compatible>false</compatible>
+              <emitStubs>true</emitStubs>
+              <emitSkeletons>true</emitSkeletons>
+            </source>
+          </sources>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- exclude broken inspect API from JavaDoc until fixed -->
+          <excludePackageNames>org.neo4j.remote.inspect:*.impl.*</excludePackageNames>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>

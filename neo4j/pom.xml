@@ -1,0 +1,185 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.neo4j</groupId>
+  <artifactId>parent-pom</artifactId>
+  <name>Neo4j parent POM</name>
+  <packaging>pom</packaging>
+  <version>6</version>
+
+  <url>http://components.neo4j.org/</url>
+  <organization>
+    <name>Neo4j</name>
+    <url>http://neo4j.org/</url>
+  </organization>
+
+  <mailingLists>
+    <mailingList>
+      <name>General Neo4j</name>
+      <subscribe>user-request@lists.neo4j.org?subject=subscribe</subscribe>
+      <unsubscribe>user-request@lists.neo4j.org?subject=unsubscribe</unsubscribe>
+      <post>user@lists.neo4j.org</post>
+      <archive>http://lists.neo4j.org/pipermail/user/</archive>
+      <otherArchives>
+        <otherArchive>
+          http://www.mail-archive.com/user@lists.neo4j.org/info.html
+        </otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:svn:https://svn.neo4j.org/components/</connection>
+    <url>https://trac.neo4j.org/browser/components/</url>
+  </scm>
+
+  <issueManagement>
+    <system>Trac</system>
+    <url>https://trac.neo4j.org/query?status=assigned&amp;status=new&amp;status=reopened&amp;component=${project.artifactId}</url>
+  </issueManagement>
+
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License, Version 3</name>
+      <url>http://www.gnu.org/licenses/agpl-3.0-standalone.html</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <ga-id>UA-1192232-15</ga-id>
+  </properties>
+
+  <build>
+    <defaultGoal>compile</defaultGoal>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>NOTICE.txt</include>
+          <include>LICENSE.txt</include>
+          <include>COPYRIGHT.txt</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+          </links>
+          <quiet>true</quiet>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.neo4j.maven.skins</groupId>
+            <artifactId>default-skin</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <version>1.4.3</version>
+        <configuration>
+          <instructions>
+            <Bundle-Version>${pom.version}</Bundle-Version>
+            <Export-Package>!${bundle.namespace}.impl.*,${bundle.namespace}.*;version="${pom.version}"</Export-Package>
+            <Private-Package>${bundle.namespace}.impl.*</Private-Package>
+            <!-- Allow each bundle to override these settings by creating a file named osgi.bnd
+                 in the same directory as the component's pom.xml. See components/kernel/trunk/osgi.bnd
+                 for an example.
+            -->
+            <_include>-osgi.bnd</_include>
+        </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <inherited>true</inherited>
+        <configuration>
+          <detectJavaApiLink>true</detectJavaApiLink>
+          <detectLinks>true</detectLinks>
+          <quiet>true</quiet>
+          <excludePackageNames>*.impl.*</excludePackageNames>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <repositories>
+    <repository>
+      <id>neo4j-public-repository</id>
+      <name>Publically available Maven 2 repository for Neo4j</name>
+      <url>http://m2.neo4j.org</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>neo4j-upload-repository</id>
+      <name>Developers-only Maven 2 upload repository for Neo4j</name>
+      <url>scpexe://m2.neo4j.org/home/neo/maven2</url>
+    </repository>
+    <site>
+      <id>neo4j-site</id>
+      <url>scpexe://m2.neo4j.org/home/neo/components</url>
+    </site>
+  </distributionManagement>
+
+</project>
