@@ -8,6 +8,16 @@ import peersim.config.Configuration;
 import peersim.edsim.EDSimulator;
 
 /**
+ * We need now to istantiate a control subclass that will generate lookup
+ * messages (source and destination are randomly choosen) every predefined
+ * step of time.
+ *
+ * TODO:
+ * Daqui partem os pedidos. Deve ser chamado por algum tipo de Schedule rou assim.
+ * E' invocado pelo metodo {@link peersim.core.Control#execute()}
+ * Mas...
+ *
+ *
  * @author Andrea
  * 
  */
