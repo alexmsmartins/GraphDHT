@@ -8,5 +8,4 @@ package peersim.chord;
  * 
  */
 public interface ChordMessage {
-
 }

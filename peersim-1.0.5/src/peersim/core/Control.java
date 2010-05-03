@@ -15,7 +15,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
-
 package peersim.core;
 
 /**
@@ -23,14 +22,12 @@ package peersim.core;
  * the ongoing simulation. It is designed to allow maximal flexibility therefore
  * poses virtually no restrictions on the implementation.
  */
-public interface Control
-{
+public interface Control {
 
-/**
- * Performs arbitrary modifications or reports arbitrary information over the
- * components.
- * @return true if the simulation has to be stopped, false otherwise.
- */
-public boolean execute();
-
+    /**
+     * Performs arbitrary modifications or reports arbitrary information over the
+     * components.
+     * @return true if the simulation has to be stopped, false otherwise.
+     */
+    public boolean execute();
 }
