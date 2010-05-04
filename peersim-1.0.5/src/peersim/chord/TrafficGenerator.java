@@ -12,7 +12,7 @@ import peersim.edsim.EDSimulator;
  * messages (source and destination are randomly choosen) every predefined
  * step of time.
  *
- * TODO:
+ * TODO
  * Daqui partem os pedidos. Deve ser chamado por algum tipo de Schedule rou assim.
  * E' invocado pelo metodo {@link peersim.core.Control#execute()}
  * Mas...
@@ -33,7 +33,16 @@ public class TrafficGenerator implements Control {
         pid = Configuration.getPid(prefix + "." + PAR_PROT);
     }
 
-    /*
+    /**
+     * TODO
+     * Podemos pensar como queremos que os nossos pedidos sejam gerados
+     * Isto vai ser substituido pelo sistema do grafo que vai necessitar de
+     * effectuar requests e assim...
+     *
+     * Precisamos de coisas adicionais aqui:
+     * Gerar o id a partido do Hash da key que desejamos
+     * provavelmente vamos necessitar de varios pedidos...
+     *
      * (non-Javadoc)
      *
      * @see peersim.core.Control#execute()
@@ -44,12 +53,17 @@ public class TrafficGenerator implements Control {
         int i = 0;
         do {
             i++;
-            sender = Network.get(CommonState.r.nextInt(size));
-            target = Network.get(CommonState.r.nextInt(size));
+            sender = Network.get(CommonState.r.nextInt(size)); // TODO This probably will not be random...
+            target = Network.get(CommonState.r.nextInt(size)); // TODO Replace by hash(key) or something
         } while (sender == null || sender.isUp() == false || target == null
                 || target.isUp() == false);
-        LookUpMessage message = new LookUpMessage(sender,
-                ((ChordProtocol) target.getProtocol(pid)).chordId);
+
+        /**
+         * TODO Create LookUpMessages
+         *
+         *
+         */
+        LookUpMessage message = new LookUpMessage(sender, ((ChordProtocol) target.getProtocol(pid)).chordId);
         EDSimulator.add(10, message, sender, pid);
         return false;
     }

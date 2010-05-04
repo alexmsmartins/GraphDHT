@@ -1,8 +1,18 @@
-/**
+/***************************************************************
+ ***
+ **                         GraphDHT
+ ***
+ ***************************************************************
+ *
+ *
+ *
+ *
+ *
  *
  */
-package peersim.chord;
+package peersim.graphdht;
 
+import peersim.chord.*;
 import peersim.config.Configuration;
 import peersim.core.Network;
 import peersim.core.Node;
@@ -25,7 +35,7 @@ import java.math.*;
  * @author Andrea
  * 
  */
-public class ChordProtocol implements EDProtocol {
+public class GraphDHTProtocol implements EDProtocol {
 
     private static final String PAR_TRANSPORT = "transport";
     private Parameters p;
@@ -47,7 +57,7 @@ public class ChordProtocol implements EDProtocol {
     /**
      *
      */
-    public ChordProtocol(String prefix) {
+    public GraphDHTProtocol(String prefix) {
         this.prefix = prefix;
         lookupMessage = new int[1];
         lookupMessage[0] = 0;
@@ -71,11 +81,11 @@ public class ChordProtocol implements EDProtocol {
             BigInteger target = message.getTarget();
             Transport t = (Transport) node.getProtocol(p.tid);
             Node n = message.getSender();
-            if (target == ((ChordProtocol) node.getProtocol(pid)).chordId) {
+            if (target == ((GraphDHTProtocol) node.getProtocol(pid)).chordId) {
                 // mandare mess di tipo final
                 t.send(node, n, new FinalMessage(message.getHopCounter()), pid);
             }
-            if (target != ((ChordProtocol) node.getProtocol(pid)).chordId) {
+            if (target != ((GraphDHTProtocol) node.getProtocol(pid)).chordId) {
                 // funzione lookup sulla fingertabable
                 Node dest = find_successor(target);
                 if (dest.isUp() == false) {
@@ -88,7 +98,7 @@ public class ChordProtocol implements EDProtocol {
                     } while (dest.isUp() == false);
                 }
                 if (dest.getID() == successorList[0].getID()
-                        && (target.compareTo(((ChordProtocol) dest.getProtocol(p.pid)).chordId) < 0)) {
+                        && (target.compareTo(((GraphDHTProtocol) dest.getProtocol(p.pid)).chordId) < 0)) {
                     fails++;
                 } else {
                     t.send(message.getSender(), dest, message, pid);
@@ -119,7 +129,7 @@ public class ChordProtocol implements EDProtocol {
      * @return
      */
     public Object clone() {
-        ChordProtocol cp = new ChordProtocol(prefix);
+        GraphDHTProtocol cp = new GraphDHTProtocol(prefix);
         String val = BigInteger.ZERO.toString();
         cp.chordId = new BigInteger(val);
         cp.fingerTable = new Node[m];
@@ -134,16 +144,16 @@ public class ChordProtocol implements EDProtocol {
 
     public void stabilize(Node myNode) {
         try {
-            Node node = ((ChordProtocol) successorList[0].getProtocol(p.pid)).predecessor;
+            Node node = ((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).predecessor;
             if (node != null) {
-                if (this.chordId == ((ChordProtocol) node.getProtocol(p.pid)).chordId) {
+                if (this.chordId == ((GraphDHTProtocol) node.getProtocol(p.pid)).chordId) {
                     return;
                 }
-                BigInteger remoteID = ((ChordProtocol) node.getProtocol(p.pid)).chordId;
-                if (idInab(remoteID, chordId, ((ChordProtocol) successorList[0].getProtocol(p.pid)).chordId)) {
+                BigInteger remoteID = ((GraphDHTProtocol) node.getProtocol(p.pid)).chordId;
+                if (idInab(remoteID, chordId, ((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).chordId)) {
                     successorList[0] = node;
                 }
-                ((ChordProtocol) successorList[0].getProtocol(p.pid)).notify(myNode);
+                ((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).notify(myNode);
             }
             updateSuccessorList();
         } catch (Exception e1) {
@@ -157,7 +167,7 @@ public class ChordProtocol implements EDProtocol {
             while (successorList[0] == null || successorList[0].isUp() == false) {
                 updateSuccessor();
             }
-            System.arraycopy(((ChordProtocol) successorList[0].getProtocol(p.pid)).successorList, 0, successorList, 1,
+            System.arraycopy(((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).successorList, 0, successorList, 1,
                     succLSize - 2);
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,9 +175,9 @@ public class ChordProtocol implements EDProtocol {
     }
 
     public void notify(Node node) throws Exception {
-        BigInteger nodeId = ((ChordProtocol) node.getProtocol(p.pid)).chordId;
+        BigInteger nodeId = ((GraphDHTProtocol) node.getProtocol(p.pid)).chordId;
         if ((predecessor == null)
-                || (idInab(nodeId, ((ChordProtocol) predecessor.getProtocol(p.pid)).chordId, this.chordId))) {
+                || (idInab(nodeId, ((GraphDHTProtocol) predecessor.getProtocol(p.pid)).chordId, this.chordId))) {
             predecessor = node;
         }
     }
@@ -208,7 +218,7 @@ public class ChordProtocol implements EDProtocol {
             if (successorList[0] == null || successorList[0].isUp() == false) {
                 updateSuccessor();
             }
-            if (idInab(id, this.chordId, ((ChordProtocol) successorList[0].getProtocol(p.pid)).chordId)) {
+            if (idInab(id, this.chordId, ((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).chordId)) {
                 return successorList[0];
             } else {
                 Node tmp = closest_preceding_node(id);
@@ -227,7 +237,7 @@ public class ChordProtocol implements EDProtocol {
                         || fingerTable[i - 1].isUp() == false) {
                     continue;
                 }
-                BigInteger fingerId = ((ChordProtocol) (fingerTable[i - 1].getProtocol(p.pid))).chordId;
+                BigInteger fingerId = ((GraphDHTProtocol) (fingerTable[i - 1].getProtocol(p.pid))).chordId;
                 if ((idInab(fingerId, this.chordId, id))
                         || (id.compareTo(fingerId) == 0)) {
                     return fingerTable[i - 1];
@@ -244,7 +254,7 @@ public class ChordProtocol implements EDProtocol {
                     if (i == 1) {
                         return successorList[0];
                     }
-                    BigInteger lowId = ((ChordProtocol) fingerTable[i - 2].getProtocol(p.pid)).chordId;
+                    BigInteger lowId = ((GraphDHTProtocol) fingerTable[i - 2].getProtocol(p.pid)).chordId;
                     if (idInab(id, lowId, fingerId)) {
                         return fingerTable[i - 2];
                     } else if (fingerId.compareTo(this.chordId) == -1) {
@@ -270,7 +280,7 @@ public class ChordProtocol implements EDProtocol {
                 System.out.println("Finger " + i + " is null");
                 continue;
             }
-            if ((((ChordProtocol) fingerTable[i].getProtocol(p.pid)).chordId).compareTo(this.chordId) == 0) {
+            if ((((GraphDHTProtocol) fingerTable[i].getProtocol(p.pid)).chordId).compareTo(this.chordId) == 0) {
                 break;
             }
             System.out.println("Finger["
@@ -278,7 +288,7 @@ public class ChordProtocol implements EDProtocol {
                     + "] = "
                     + fingerTable[i].getIndex()
                     + " chordId "
-                    + ((ChordProtocol) fingerTable[i].getProtocol(p.pid)).chordId);
+                    + ((GraphDHTProtocol) fingerTable[i].getProtocol(p.pid)).chordId);
         }
     }
 
@@ -300,8 +310,8 @@ public class ChordProtocol implements EDProtocol {
             }
         }
         BigInteger pot = this.chordId.add(base);
-        BigInteger idFirst = ((ChordProtocol) Network.get(0).getProtocol(p.pid)).chordId;
-        BigInteger idLast = ((ChordProtocol) Network.get(Network.size() - 1).getProtocol(p.pid)).chordId;
+        BigInteger idFirst = ((GraphDHTProtocol) Network.get(0).getProtocol(p.pid)).chordId;
+        BigInteger idLast = ((GraphDHTProtocol) Network.get(Network.size() - 1).getProtocol(p.pid)).chordId;
         if (pot.compareTo(idLast) == 1) {
             pot = (pot.mod(idLast));
             if (pot.compareTo(this.chordId) != -1) {
@@ -315,9 +325,9 @@ public class ChordProtocol implements EDProtocol {
             }
         }
         do {
-            fingerTable[next] = ((ChordProtocol) successorList[0].getProtocol(p.pid)).find_successor(pot);
+            fingerTable[next] = ((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).find_successor(pot);
             pot = pot.subtract(BigInteger.ONE);
-            ((ChordProtocol) successorList[0].getProtocol(p.pid)).fixFingers();
+            ((GraphDHTProtocol) successorList[0].getProtocol(p.pid)).fixFingers();
         } while (fingerTable[next] == null || fingerTable[next].isUp() == false);
         next++;
     }

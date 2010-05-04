@@ -77,7 +77,7 @@ private final int[] b;
 private final RandPermutation rp = new RandPermutation(CommonState.r);
 
 // ===================== initialization ================================
-// =====================================================================
+
 
 /**
  * Standard constructor that reads the configuration parameters.
@@ -94,7 +94,7 @@ public BallExpansion(String name)
 }
 
 // ====================== methods ======================================
-// =====================================================================
+
 
 /**
 * Prints information about ball expansion. It uses {@value #PAR_N} nodes to

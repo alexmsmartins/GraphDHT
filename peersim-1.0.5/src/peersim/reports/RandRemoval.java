@@ -52,7 +52,7 @@ private static final String PAR_N = "n";
 private final int n;
 
 // ===================== initialization ================================
-// =====================================================================
+
 
 /**
  * Standard constructor that reads the configuration parameters.
@@ -66,7 +66,7 @@ public RandRemoval(String name)
 }
 
 // ====================== methods ======================================
-// =====================================================================
+
 
 /**
 * Prints results of node removal tests. The following experiment is

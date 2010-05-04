@@ -15,7 +15,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
-
 package peersim.config;
 
 import java.util.*;
@@ -220,449 +219,390 @@ import java.util.*;
  * {@link ParsedProperties#load}.
  * 
  */
-public class Configuration
-{
+public class Configuration {
 
 // =================== static fields =================================
 // ===================================================================
-
-/** Default max depth limit to avoid recursive definitions */
-public static final int DEFAULT_MAXDEPTH = 100;
-
-/**
- * The debug level for the configuration. If defined, a line is printed for
- * each configuration parameter read. If defined and equal to
- * {@value #DEBUG_EXTENDED}, additional context information for debug is
- * printed. If defined and equal to {@value #DEBUG_FULL}, all the
- * configuration properties are printed at the beginning, not just when
- * they are called.
- * @config
- */
-static final String PAR_DEBUG = "debug.config";
-
-/**
- * If parameter {@value #PAR_DEBUG} is equal to this string, additional
- * context information for debug is printed.
- */
-static final String DEBUG_EXTENDED = "context";
-
-/**
- * If parameter {value #PAR_DEBUG} is equal to this string, all the
- * configuration properties are printed at the beginning, not just when
- * they are called.
- */
-static final String DEBUG_FULL = "full";
-
-/**
- * The maximum depth for expressions. This is a simple mechanism to avoid
- * unbounded recursion. The default is {@value #DEFAULT_MAXDEPTH}, and you
- * probably don't want to change it.
- * @config
- */
-static final String PAR_MAXDEPTH = "expressions.maxdepth";
-
-/**
- * Used to configure ordering of the components. Determines the ordering in
- * the array as returned by {@link #getNames}. See the general description
- * of {@link Configuration} for details.
- * @config
- */
-static final String PAR_ORDER = "order";
-
-/**
- * Used to configure ordering of the components. Determines the ordering in
- * the array as returned by {@link #getNames}, and can bu used to also
- * exclude elements. See the general description of {@link Configuration}
- * for details.
- * @config
- */
-static final String PAR_INCLUDE = "include";
-
+    /** Default max depth limit to avoid recursive definitions */
+    public static final int DEFAULT_MAXDEPTH = 100;
+    /**
+     * The debug level for the configuration. If defined, a line is printed for
+     * each configuration parameter read. If defined and equal to
+     * {@value #DEBUG_EXTENDED}, additional context information for debug is
+     * printed. If defined and equal to {@value #DEBUG_FULL}, all the
+     * configuration properties are printed at the beginning, not just when
+     * they are called.
+     * @config
+     */
+    static final String PAR_DEBUG = "debug.config";
+    /**
+     * If parameter {@value #PAR_DEBUG} is equal to this string, additional
+     * context information for debug is printed.
+     */
+    static final String DEBUG_EXTENDED = "context";
+    /**
+     * If parameter {value #PAR_DEBUG} is equal to this string, all the
+     * configuration properties are printed at the beginning, not just when
+     * they are called.
+     */
+    static final String DEBUG_FULL = "full";
+    /**
+     * The maximum depth for expressions. This is a simple mechanism to avoid
+     * unbounded recursion. The default is {@value #DEFAULT_MAXDEPTH}, and you
+     * probably don't want to change it.
+     * @config
+     */
+    static final String PAR_MAXDEPTH = "expressions.maxdepth";
+    /**
+     * Used to configure ordering of the components. Determines the ordering in
+     * the array as returned by {@link #getNames}. See the general description
+     * of {@link Configuration} for details.
+     * @config
+     */
+    static final String PAR_ORDER = "order";
+    /**
+     * Used to configure ordering of the components. Determines the ordering in
+     * the array as returned by {@link #getNames}, and can bu used to also
+     * exclude elements. See the general description of {@link Configuration}
+     * for details.
+     * @config
+     */
+    static final String PAR_INCLUDE = "include";
 // XXX it's ugly because it replicates the definition of Node.PAR_PROT, but
 // this would be the only dependence on the rest of the core...
-/**
- * The type name of components describing protocols. This is the only point
- * at which the class is not blind to the actual semantics of the
- * configuration.
- */
-static final String PAR_PROT = "protocol";
-
-/**
- * The properties object that stores all configuration information.
- */
-private static ConfigContainer config = null;
+    /**
+     * The type name of components describing protocols. This is the only point
+     * at which the class is not blind to the actual semantics of the
+     * configuration.
+     */
+    static final String PAR_PROT = "protocol";
+    /**
+     * The properties object that stores all configuration information.
+     */
+    private static ConfigContainer config = null;
 
 // =================== initialization ================================
 // ===================================================================
-
-/** to prevent construction */
-private Configuration()
-{
-}
+    /** to prevent construction */
+    private Configuration() {
+    }
 
 // =================== static public methods =========================
 // ===================================================================
-
-/**
- * Sets the system-wide configuration in Properties format. It can be
- * called only once. After that the configuration becomes unmodifiable
- * (read only). If modification is attempted, a RuntimeException is thrown
- * and no change is made.
- * @param p
- *          The Properties object containing configuration info
- */
-public static void setConfig(Properties p)
-{
-	if (config != null) {
-		throw new RuntimeException("Setting configuration was attempted twice.");
-	}
-	config = new ConfigContainer(p, false);
-}
+    /**
+     * Sets the system-wide configuration in Properties format. It can be
+     * called only once. After that the configuration becomes unmodifiable
+     * (read only). If modification is attempted, a RuntimeException is thrown
+     * and no change is made.
+     * @param p
+     *          The Properties object containing configuration info
+     */
+    public static void setConfig(Properties p) {
+        if (config != null) {
+            throw new RuntimeException("Setting configuration was attempted twice.");
+        }
+        config = new ConfigContainer(p, false);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Sets the system-wide configuration in Properties format. It can be
- * called only once. After that the configuration becomes unmodifiable
- * (read only). If modification is attempted, a RuntimeException is thrown
- * and no change is made.
- * @param p
- *          The Properties object containing configuration info
- */
-public static void setConfig(Properties p, boolean check)
-{
-	if (config != null) {
-		throw new RuntimeException("Setting configuration was attempted twice.");
-	}
-	config = new ConfigContainer(p, check);
-}
+    /**
+     * Sets the system-wide configuration in Properties format. It can be
+     * called only once. After that the configuration becomes unmodifiable
+     * (read only). If modification is attempted, a RuntimeException is thrown
+     * and no change is made.
+     * @param p
+     *          The Properties object containing configuration info
+     */
+    public static void setConfig(Properties p, boolean check) {
+        if (config != null) {
+            throw new RuntimeException("Setting configuration was attempted twice.");
+        }
+        config = new ConfigContainer(p, check);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * @return true if and only if name is a specified (existing) property.
- */
-public static boolean contains(String name)
-{
-	return config.contains(name);
-}
+    /**
+     * @return true if and only if name is a specified (existing) property.
+     */
+    public static boolean contains(String name) {
+        return config.contains(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, throws a
- * {@link MissingParameterException}.
- * @param name
- *          Name of configuration property
- * @param def
- *          default value
- */
-public static boolean getBoolean(String name, boolean def)
-{
-	return config.getBoolean(name, def);
-}
+    /**
+     * Reads given configuration property. If not found, throws a
+     * {@link MissingParameterException}.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          default value
+     */
+    public static boolean getBoolean(String name, boolean def) {
+        return config.getBoolean(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given property. If not found, or the value is empty string then
- * throws a {@link MissingParameterException}. Empty string is not
- * accepted as false due to the similar function of {@link #contains} which
- * returns true in that case. True is returned if the lowercase value of
- * the property is "true", otherwise false is returned.
- * @param name
- *          Name of configuration property
- */
-public static boolean getBoolean(String name)
-{
-	return config.getBoolean(name);
-}
+    /**
+     * Reads given property. If not found, or the value is empty string then
+     * throws a {@link MissingParameterException}. Empty string is not
+     * accepted as false due to the similar function of {@link #contains} which
+     * returns true in that case. True is returned if the lowercase value of
+     * the property is "true", otherwise false is returned.
+     * @param name
+     *          Name of configuration property
+     */
+    public static boolean getBoolean(String name) {
+        return config.getBoolean(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, returns the default
- * value.
- * @param name
- *          Name of configuration property
- * @param def
- *          default value
- */
-public static int getInt(String name, int def)
-{
-	return config.getInt(name, def);
-}
+    /**
+     * Reads given configuration property. If not found, returns the default
+     * value.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          default value
+     */
+    public static int getInt(String name, int def) {
+        return config.getInt(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, throws a
- * {@link MissingParameterException}.
- * @param name
- *          Name of configuration property
- */
-public static int getInt(String name)
-{
-	return config.getInt(name);
-}
+    /**
+     * Reads given configuration property. If not found, throws a
+     * {@link MissingParameterException}.
+     * @param name
+     *          Name of configuration property
+     */
+    public static int getInt(String name) {
+        return config.getInt(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, returns the default
- * value.
- * @param name
- *          Name of configuration property
- * @param def
- *          default value
- */
-public static long getLong(String name, long def)
-{
-	return config.getLong(name, def);
-}
+    /**
+     * Reads given configuration property. If not found, returns the default
+     * value.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          default value
+     */
+    public static long getLong(String name, long def) {
+        return config.getLong(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, throws a
- * {@link MissingParameterException}.
- * @param name
- *          Name of configuration property
- */
-public static long getLong(String name)
-{
-	return config.getLong(name);
-}
+    /**
+     * Reads given configuration property. If not found, throws a
+     * {@link MissingParameterException}.
+     * @param name
+     *          Name of configuration property
+     */
+    public static long getLong(String name) {
+        return config.getLong(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, returns the default
- * value.
- * @param name
- *          Name of configuration property
- * @param def
- *          default value
- */
-public static double getDouble(String name, double def)
-{
-	return config.getDouble(name, def);
-}
+    /**
+     * Reads given configuration property. If not found, returns the default
+     * value.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          default value
+     */
+    public static double getDouble(String name, double def) {
+        return config.getDouble(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, throws a
- * MissingParameterException.
- * @param name
- *          Name of configuration property
- */
-public static double getDouble(String name)
-{
-	return config.getDouble(name);
-}
+    /**
+     * Reads given configuration property. If not found, throws a
+     * MissingParameterException.
+     * @param name
+     *          Name of configuration property
+     */
+    public static double getDouble(String name) {
+        return config.getDouble(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, returns the default
- * value.
- * @param name
- *          Name of configuration property
- * @param def
- *          default value
- */
-public static String getString(String name, String def)
-{
-	return config.getString(name, def);
-}
+    /**
+     * Reads given configuration property. If not found, returns the default
+     * value.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          default value
+     */
+    public static String getString(String name, String def) {
+        return config.getString(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, throws a
- * MissingParameterException. Removes trailing whitespace characters.
- * @param name
- *          Name of configuration property
- */
-public static String getString(String name)
-{
-	return config.getString(name);
-}
+    /**
+     * Reads given configuration property. If not found, throws a
+     * MissingParameterException. Removes trailing whitespace characters.
+     * @param name
+     *          Name of configuration property
+     */
+    public static String getString(String name) {
+        return config.getString(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads the given property from the configuration interpreting it as a
- * protocol name. Returns the numeric protocol identifier of this protocol
- * name. See the discussion of protocol name at {@link Configuration} for
- * details on how this numeric id is calculated
- * 
- * @param name
- *          Name of configuration property
- * @return the numeric protocol identifier associated to the value of the
- *         property
- */
-public static int getPid(String name)
-{
-	return config.getPid(name);
-}
+    /**
+     * Reads the given property from the configuration interpreting it as a
+     * protocol name. Returns the numeric protocol identifier of this protocol
+     * name. See the discussion of protocol name at {@link Configuration} for
+     * details on how this numeric id is calculated
+     *
+     * @param name
+     *          Name of configuration property
+     * @return the numeric protocol identifier associated to the value of the
+     *         property
+     */
+    public static int getPid(String name) {
+        return config.getPid(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Calls {@link #getPid(String)}, and returns the default if no property
- * is defined with the given name.
- * 
- * @param name
- *          Name of configuration property
- * @param pid
- *          the default protocol identifier
- * @return the numeric protocol identifier associated to the value of the
- *         property, or the default if not defined
- */
-public static int getPid(String name, int pid)
-{
-	return config.getPid(name, pid);
-}
+    /**
+     * Calls {@link #getPid(String)}, and returns the default if no property
+     * is defined with the given name.
+     *
+     * @param name
+     *          Name of configuration property
+     * @param pid
+     *          the default protocol identifier
+     * @return the numeric protocol identifier associated to the value of the
+     *         property, or the default if not defined
+     */
+    public static int getPid(String name, int pid) {
+        return config.getPid(name, pid);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Returns the numeric protocol identifier of the given protocol name.
- * 
- * @param protname
- *          the protocol name.
- * @return the numeric protocol identifier associated to the protocol name
- */
-public static int lookupPid(String protname)
-{
-	return config.lookupPid(protname);
-}
+    /**
+     * Returns the numeric protocol identifier of the given protocol name.
+     *
+     * @param protname
+     *          the protocol name.
+     * @return the numeric protocol identifier associated to the protocol name
+     */
+    public static int lookupPid(String protname) {
+        return config.lookupPid(protname);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Returns the name of a protocol that has the given identifier.
- * <p>
- * Note that this is not a constant time operation in the number of
- * protocols, although typically there are very few protocols defined.
- * 
- * @param pid
- *          numeric protocol identifier.
- * @return name of the protocol that has the given id. null if no protocols
- *         have the given id.
- */
-public static String lookupPid(int pid)
-{
-	return config.lookupPid(pid);
-}
+    /**
+     * Returns the name of a protocol that has the given identifier.
+     * <p>
+     * Note that this is not a constant time operation in the number of
+     * protocols, although typically there are very few protocols defined.
+     *
+     * @param pid
+     *          numeric protocol identifier.
+     * @return name of the protocol that has the given id. null if no protocols
+     *         have the given id.
+     */
+    public static String lookupPid(int pid) {
+        return config.lookupPid(pid);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, throws a
- * {@link MissingParameterException}. When creating the Class object, a
- * few attempts are done to resolve the classname. See
- * {@link Configuration} for details.
- * @param name
- *          Name of configuration property
- */
-public static Class getClass(String name)
-{
-	return config.getClass(name);
-}
+    /**
+     * Reads given configuration property. If not found, throws a
+     * {@link MissingParameterException}. When creating the Class object, a
+     * few attempts are done to resolve the classname. See
+     * {@link Configuration} for details.
+     * @param name
+     *          Name of configuration property
+     */
+    public static Class getClass(String name) {
+        return config.getClass(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property. If not found, returns the default
- * value.
- * @param name
- *          Name of configuration property
- * @param def
- *          default value
- * @see #getClass(String)
- */
-public static Class getClass(String name, Class def)
-{
-	return config.getClass(name, def);
-}
+    /**
+     * Reads given configuration property. If not found, returns the default
+     * value.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          default value
+     * @see #getClass(String)
+     */
+    public static Class getClass(String name, Class def) {
+        return config.getClass(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property for a class name. It returns an
- * instance of the class. The class must implement a constructor that takes
- * a String as an argument. The value of this string will be <tt>name</tt>.
- * The constructor of the class can see the configuration so it can make
- * use of this name to read its own parameters from it.
- * @param name
- *          Name of configuration property
- * @throws MissingParameterException
- *           if the given property is not defined
- * @throws IllegalParameterException
- *           if there is any problem creating the instance
- */
-public static Object getInstance(String name)
-{
-	return config.getInstance(name);
-}
+    /**
+     * Reads given configuration property for a class name. It returns an
+     * instance of the class. The class must implement a constructor that takes
+     * a String as an argument. The value of this string will be <tt>name</tt>.
+     * The constructor of the class can see the configuration so it can make
+     * use of this name to read its own parameters from it.
+     * @param name
+     *          Name of configuration property
+     * @throws MissingParameterException
+     *           if the given property is not defined
+     * @throws IllegalParameterException
+     *           if there is any problem creating the instance
+     */
+    public static Object getInstance(String name) {
+        return config.getInstance(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Reads given configuration property for a class name. It returns an
- * instance of the class. The class must implement a constructor that takes
- * a String as an argument. The value of this string will be <tt>name</tt>.
- * The constructor of the class can see the configuration so it can make
- * use of this name to read its own parameters from it.
- * @param name
- *          Name of configuration property
- * @param def
- *          The default object that is returned if there is no property
- *          defined with the given name
- * @throws IllegalParameterException
- *           if the given name is defined but there is a problem creating
- *           the instance.
- */
-public static Object getInstance(String name, Object def)
-{
-	return config.getInstance(name, def);
-}
+    /**
+     * Reads given configuration property for a class name. It returns an
+     * instance of the class. The class must implement a constructor that takes
+     * a String as an argument. The value of this string will be <tt>name</tt>.
+     * The constructor of the class can see the configuration so it can make
+     * use of this name to read its own parameters from it.
+     * @param name
+     *          Name of configuration property
+     * @param def
+     *          The default object that is returned if there is no property
+     *          defined with the given name
+     * @throws IllegalParameterException
+     *           if the given name is defined but there is a problem creating
+     *           the instance.
+     */
+    public static Object getInstance(String name, Object def) {
+        return config.getInstance(name, def);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * It returns an array of class instances. The instances are constructed by
- * calling {@link #getInstance(String)} on the names returned by
- * {@link #getNames(String)}.
- * @param name
- *          The component type (i.e. prefix of the list of configuration
- *          properties) which will be passed to {@link #getNames(String)}.
- */
-public static Object[] getInstanceArray(String name)
-{
-	return config.getInstanceArray(name);
-}
+    /**
+     * It returns an array of class instances. The instances are constructed by
+     * calling {@link #getInstance(String)} on the names returned by
+     * {@link #getNames(String)}.
+     * @param name
+     *          The component type (i.e. prefix of the list of configuration
+     *          properties) which will be passed to {@link #getNames(String)}.
+     */
+    public static Object[] getInstanceArray(String name) {
+        return config.getInstanceArray(name);
+    }
 
 // -------------------------------------------------------------------
-
-/**
- * Returns an array of names prefixed by the specified name. The array is
- * sorted as follows. If there is no config entry
- * <code>{@value #PAR_INCLUDE}+"."+name</code> or
- * <code>{@value #PAR_ORDER}+"."+name</code> then the order is
- * alphabetical. Otherwise this entry defines the order. For more
- * information see {@link Configuration}.
- * @param name
- *          the component type (i.e., the prefix)
- * @return the full property names in the order specified by the
- *         configuration
- */
-public static String[] getNames(String name)
-{
-	return config.getNames(name);
-}
-
+    /**
+     * Returns an array of names prefixed by the specified name. The array is
+     * sorted as follows. If there is no config entry
+     * <code>{@value #PAR_INCLUDE}+"."+name</code> or
+     * <code>{@value #PAR_ORDER}+"."+name</code> then the order is
+     * alphabetical. Otherwise this entry defines the order. For more
+     * information see {@link Configuration}.
+     * @param name
+     *          the component type (i.e., the prefix)
+     * @return the full property names in the order specified by the
+     *         configuration
+     */
+    public static String[] getNames(String name) {
+        return config.getNames(name);
+    }
 }

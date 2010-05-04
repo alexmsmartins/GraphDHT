@@ -47,7 +47,6 @@ import peersim.edsim.*;
 public class Simulator {
 
 // ========================== static constants ==========================
-// ======================================================================
     /** {@link CDSimulator} */
     public static final int CDSIM = 0;
     /** {@link EDSimulator} */
@@ -73,12 +72,9 @@ public class Simulator {
      */
     public static final String PAR_REDIRECT = "simulation.stdout";
 // ==================== static fields ===================================
-// ======================================================================
-    /** */
     private static int simID = UNKNOWN;
 
 //========================== methods ===================================
-//======================================================================
     /**
      * Returns the numeric id of the simulator to invoke. At the moment this can
      * be {@link #CDSIM}, {@link #EDSIM} or {@link #UNKNOWN}.
@@ -134,27 +130,20 @@ public class Simulator {
      */
     public static void main(String[] args) {
         long time = System.currentTimeMillis();
-
         System.err.println("Simulator: loading configuration");
         Configuration.setConfig(new ParsedProperties(args));
-
-        PrintStream newout =
-                (PrintStream) Configuration.getInstance(PAR_REDIRECT, System.out);
+        PrintStream newout = (PrintStream) Configuration.getInstance(PAR_REDIRECT, System.out);
         if (newout != System.out) {
             System.setOut(newout);
         }
-
         int exps = Configuration.getInt(PAR_EXPS, 1);
 
         final int SIMID = getSimID();
         if (SIMID == UNKNOWN) {
-            System.err.println(
-                    "Simulator: unable to determine simulation engine type");
+            System.err.println("Simulator: unable to determine simulation engine type");
             return;
         }
-
         try {
-
             for (int k = 0; k < exps; ++k) {
                 if (k > 0) {
                     long seed = CommonState.r.nextLong();
@@ -162,8 +151,7 @@ public class Simulator {
                 }
                 System.err.print("Simulator: starting experiment " + k);
                 System.err.println(" invoking " + simName[SIMID]);
-                System.err.println("Random seed: "
-                        + CommonState.r.getLastSeed());
+                System.err.println("Random seed: " + CommonState.r.getLastSeed());
                 System.out.println("\n\n");
 
                 // XXX could be done through reflection, but
@@ -177,7 +165,6 @@ public class Simulator {
                         break;
                 }
             }
-
         } catch (MissingParameterException e) {
             System.err.println(e + "");
             System.exit(1);
@@ -193,8 +180,5 @@ public class Simulator {
         if (Configuration.contains("__x")) {
             Network.test();
         }
-
-
-
     }
 }

@@ -31,7 +31,7 @@ public class IncrementalFreq implements Cloneable {
 
 
 // ===================== fields ========================================
-// =====================================================================
+
 
 /** The number of items inserted. */
 private int n;

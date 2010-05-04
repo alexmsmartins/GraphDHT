@@ -30,7 +30,7 @@ public class SimpleNewscast implements CDProtocol, Linkable
 {
 
 // =============== static fields =======================================
-// =====================================================================
+
 
 // We are using static temporary arrays to avoid garbage collection
 // of them. these are used by all SimpleNewscast protocols included
@@ -49,7 +49,7 @@ private static int[] ts;
 private static final String PAR_CACHE = "cache";
 
 // =================== fields ==========================================
-// =====================================================================
+
 
 /** Neighbors currently in the cache */
 private Node[] cache;
@@ -58,7 +58,7 @@ private Node[] cache;
 private int[] tstamps;
 
 // ====================== initialization ===============================
-// =====================================================================
+
 
 public SimpleNewscast(String n)
 {

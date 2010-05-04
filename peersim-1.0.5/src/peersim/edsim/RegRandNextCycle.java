@@ -37,7 +37,7 @@ public class RegRandNextCycle extends NextCycleEvent {
 private long nextCycleStart = -1;
 
 // =============================== initialization ======================
-// =====================================================================
+
 
 
 /**
@@ -60,7 +60,7 @@ public Object clone() throws CloneNotSupportedException {
 
 
 // ========================== methods ==================================
-// =====================================================================
+
 
 
 /**

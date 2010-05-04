@@ -9,7 +9,7 @@ import java.math.*;
 
 /**
  * Prior to the simulation we have to create the perfect chord network.
- * CreateNw class will initialize every node by generating the Chord identifiers
+ * CreateNetwork class will initialize every node by generating the Chord identifiers
  * (randomly chose within the number of bytes specified in idLength), linking
  * successors (the succListSize is the size of the successors list) and
  * predecessors, creating the corresponding finger tables (with idLength number
@@ -27,7 +27,7 @@ import java.math.*;
  * @author Andrea
  * 
  */
-public class CreateNw implements Control {
+public class CreateNetwork implements Control {
 
     private int pid = 0;
     private static final String PAR_IDLENGTH = "idLength";
@@ -42,7 +42,7 @@ public class CreateNw implements Control {
     /**
      *
      */
-    public CreateNw(String prefix) {
+    public CreateNetwork(String prefix) {
         pid = Configuration.getPid(prefix + "." + PAR_PROT);
         idLength = Configuration.getInt(prefix + "." + PAR_IDLENGTH);
         successorLsize = Configuration.getInt(prefix + "." + PAR_SUCCSIZE);
@@ -55,7 +55,7 @@ public class CreateNw implements Control {
      */
     public boolean execute() {
         for (int i = 0; i < Network.size(); i++) {
-            Node node = (Node) Network.get(i);
+            Node node = Network.get(i);
             ChordProtocol cp = (ChordProtocol) node.getProtocol(pid);
             cp.m = idLength;
             cp.succLSize = successorLsize;

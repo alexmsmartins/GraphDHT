@@ -41,7 +41,7 @@ private static final String PAR_N = "n";
 private final int n;
 
 // ===================== initialization ================================
-// =====================================================================
+
 
 /**
  * Standard constructor that reads the configuration parameters.
@@ -55,7 +55,7 @@ public Clustering(String name)
 }
 
 // ====================== methods ======================================
-// =====================================================================
+
 
 /**
 * Prints information about the clustering coefficient.
