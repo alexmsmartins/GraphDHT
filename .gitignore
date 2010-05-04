@@ -8,3 +8,4 @@ peersim-1.0.5/build/*
 peersim-1.0.5/nbproject/private/*
 neo4j/kernel-1.0/target/*
 neo4j/remote-graphdb-0.6/target/*
+peersim-1.0.5/nbproject/private/private.properties

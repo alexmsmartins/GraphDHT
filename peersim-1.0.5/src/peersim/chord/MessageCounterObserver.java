@@ -4,6 +4,7 @@
 package peersim.chord;
 
 import java.util.ArrayList;
+import java.util.Date;
 import peersim.core.Control;
 import peersim.core.Network;
 import peersim.config.Configuration;
@@ -74,11 +75,11 @@ public class MessageCounterObserver implements Control {
         }
         double media = meanCalculator(hopCounters);
         if (media > 0) {
-            System.out.println("Mean:  " + media + " Max Value: " + max
+            System.out.println((new Date()) + "Mean:  " + media + " Max Value: " + max
                     + " Min Value: " + min + " # Observations: "
                     + hopCounters.size());
         }
-        System.out.println("	 # Stabilizations: " + totalStab + " # Failures: "
+        System.out.println((new Date()) + "	 # Stabilizations: " + totalStab + " # Failures: "
                 + totFails);
         System.out.println("");
         return false;
