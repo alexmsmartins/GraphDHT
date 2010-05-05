@@ -1,28 +1,26 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/***
+ * TODO: Modify Header
+ *
+ *
+ *
  */
+package org.graphdht.dht.rmi;
 
-package org.graphdht.dht;
-
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Map;
+import org.graphdht.dht.obj.Key;
+import org.graphdht.dht.obj.Value;
 
 /**
+ * RMI Interface to be used to preform DHT operations
  *
- * @author alex
+ * TODO: Review the javadoc
+ * 
+ * @author pamm@dei.uc.pt
+ * @author nmsa@dei.uc.pt
  */
-public interface DHTService<K, V> {
-
-
-        /**
-     * Returns the number of key-value mappings in this map.  If the
-     * map contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
-     * <tt>Integer.MAX_VALUE</tt>.
-     *
-     * @return the number of key-value mappings in this map
-     */
-    int size();
-
+public interface DHTService extends Remote {
 
     /**
      * Returns the value to which the specified key is mapped,
@@ -47,9 +45,7 @@ public interface DHTService<K, V> {
      * @throws NullPointerException if the specified key is null and this map
      *         does not permit null keys (optional)
      */
-    V get(Object key);
-
-    // Modification Operations
+    public Value get(Key key) throws RemoteException;
 
     /**
      * Associates the specified value with the specified key in this map
@@ -75,7 +71,7 @@ public interface DHTService<K, V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    V put(K key, V value);
+    public Value put(Key key, Value value) throws RemoteException;
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -105,10 +101,7 @@ public interface DHTService<K, V> {
      * @throws NullPointerException if the specified key is null and this
      *         map does not permit null keys (optional)
      */
-    V remove(Object key);
-
-
-    // Bulk Operations
+    public Value remove(Key key) throws RemoteException;
 
     /**
      * Copies all of the mappings from the specified map to this map
@@ -129,7 +122,5 @@ public interface DHTService<K, V> {
      * @throws IllegalArgumentException if some property of a key or value in
      *         the specified map prevents it from being stored in this map
      */
-    void putAll(Map<? extends K, ? extends V> m);
-
-
+    void putAll(Map<Key, Value> m) throws RemoteException;
 }
