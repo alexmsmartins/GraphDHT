@@ -6,6 +6,10 @@
   <name>Neo4j parent POM</name>
   <packaging>pom</packaging>
   <version>6</version>
+  <modules>
+      <module>kernel-1.0</module>
+      <module>remote-graphdb-0.6</module>
+  </modules>
 
   <url>http://components.neo4j.org/</url>
   <organization>
