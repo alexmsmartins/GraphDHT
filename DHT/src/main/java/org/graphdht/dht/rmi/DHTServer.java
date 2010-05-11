@@ -16,7 +16,7 @@ import org.graphdht.dht.obj.Value;
  * @param <Value>
  * @author root
  */
-public class DHTServer extends UnicastRemoteObject implements DHTService {
+public class DHTServer extends UnicastRemoteObject implements DHTService<Key, Value> {
 
     public DHTServer() throws RemoteException {
         super();

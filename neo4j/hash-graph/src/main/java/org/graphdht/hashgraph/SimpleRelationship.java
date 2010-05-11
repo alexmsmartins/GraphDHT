@@ -14,7 +14,8 @@ import org.neo4j.graphdb.RelationshipType;
  *
  * @author alex
  */
-public class SimpleRelationship implements Relationship, Serializable {
+public class SimpleRelationship extends SimplePropertyContainer
+        implements Relationship, Serializable {
 
     public long getId() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -45,34 +46,6 @@ public class SimpleRelationship implements Relationship, Serializable {
     }
 
     public boolean isType(RelationshipType type) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean hasProperty(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Object getProperty(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Object getProperty(String key, Object defaultValue) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setProperty(String key, Object value) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Object removeProperty(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Iterable<String> getPropertyKeys() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Iterable<Object> getPropertyValues() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

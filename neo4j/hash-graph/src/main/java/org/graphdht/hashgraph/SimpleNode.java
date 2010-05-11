@@ -19,11 +19,15 @@ import org.neo4j.graphdb.Traverser.Order;
  *
  * @author alex
  */
-public class SimpleNode implements Node, Serializable {
+public class SimpleNode extends SimplePropertyContainer implements Node, Serializable {
+
+    long id;
 
     public long getId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return id;
     }
+
+    
 
     public void delete() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -81,32 +85,22 @@ public class SimpleNode implements Node, Serializable {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean hasProperty(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+    public int hashCode(){
+        throw new UnsupportedOperationException("Not supported yet due to possibility of failure.");
     }
 
-    public Object getProperty(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SimpleNode other = (SimpleNode) obj;
+        if(this.getId() == other.getId())
+            return true;
+        else
+            return false;
     }
-
-    public Object getProperty(String key, Object defaultValue) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setProperty(String key, Object value) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Object removeProperty(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Iterable<String> getPropertyKeys() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Iterable<Object> getPropertyValues() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
 }

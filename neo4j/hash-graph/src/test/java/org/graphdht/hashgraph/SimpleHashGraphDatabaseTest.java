@@ -51,7 +51,7 @@ public class SimpleHashGraphDatabaseTest {
      * set of Tests fromNeo4J Getting Started Guide
      */
     @Test
-    public void testGettingStartedGuide() {
+    public void testGettingStartedGuide() throws Exception {
         System.out.println("Start Getting Started Guide!");
         GraphDatabaseService neo = new SimpleHashGraphDatabase("var/graphdb");
 
@@ -71,7 +71,8 @@ public class SimpleHashGraphDatabaseTest {
             System.out.print(relationship.getProperty("message"));
             System.out.print(secondNode.getProperty("message"));
         } catch (Exception e) {
-            fail("The Simple example failed with " + e.getStackTrace().toString() );
+            throw e;
+            //fail("The Simple example failed with " + e.getStackTrace().toString() );
         } finally {
             //tx.finish();
         }

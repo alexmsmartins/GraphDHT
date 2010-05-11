@@ -1,25 +1,17 @@
 Prototype to test how Neo4j runs with an Hashtable underneath.
 
 Notes:
-  - org.neo4j.graphdb.GraphDatabaseService - 
- * The main access point to a running Neo4j instance. The most common
- * implementation is the {@link EmbeddedGraphDatabase} class, which is used to
- * embed Neo4j in an application. Typically, you would create an
- * <code>EmbeddedGraphDatabase</code> instance as follows:
- * 
- * <pre>
- * <code>GraphDatabaseService graphDb = new EmbeddedGraphDatabase( "var/graphDb" );
- * // ... use Neo4j
- * graphDb.{@link #shutdown() shutdown()};</code>
- * </pre>
- * 
- * GraphDatabaseService provides operations to {@link #enableRemoteShell enable
- * the shell}, {@link #createNode() create nodes}, {@link #getNodeById(long) get
- * nodes given an id}, get the {@link #getReferenceNode() reference node} and
- * ultimately {@link #shutdown() shutdown Neo4j}.
- * <p>
- * Please note that all operations that read or write to the graph must be
- * invoked in a {@link Transaction transactional context}. Failure to do so will
- * result in a {@link NotInTransactionException} being thrown.
+  - org.neo4j.graphdb.GraphDatabaseService
+The main access point to a running Neo4j instance. The most common implementation is the {@link EmbeddedGraphDatabase} class, which is used to embed Neo4j in an application. GraphDatabaseService provides operations to {@link #enableRemoteShell enable the shell}, {@link #createNode() create nodes}, {@link #getNodeById(long) get nodes given an id}, get the {@link #getReferenceNode() reference node} and ultimately {@link #shutdown() shutdown Neo4j}.
+Please note that all operations that read or write to the graph must be invoked in a {@link Transaction transactional context}. Failure to do so will result in a {@link NotInTransactionException} being thrown.
 
-  - 
+  - org.neo4j.graphdb.Node extends org.neo4j.graphdb.PropertyContainer
+A node in the graph with properties and relationships to other entities. Along with {@link Relationship relationships}, nodes are the core building blocks of the Neo4j data representation model. Nodes are created by invoking the {@link GraphDatabaseService#createNode} method.
+Node has three major groups of operations: operations that deal with relationships, operations that deal with properties (see {@link PropertyContainer}) and operations that create {@link Traverser traversers}.
+
+  - org.neo4j.graphdb.Relationship extends org.neo4j.graphdb.PropertyContainer
+A relationship between two nodes in the graph. A relationship has a start node, an end node and a {@link RelationshipType type}. You can attach properties to relationships with the API specified in {@link PropertyContainer}.
+Relationships are created by invoking the {@link Node#createRelationshipTo(Node, RelationshipType)  Node.createRelationshipTo()} method on a node.
+The fact that the relationship API gives meaning to {@link #getStartNode() start} and {@link #getEndNode() end} nodes implicitly means that all relationships have a direction.
+The id of a relationship is unique, but may not be unique over time since neo4j reuses deleted ids.
+

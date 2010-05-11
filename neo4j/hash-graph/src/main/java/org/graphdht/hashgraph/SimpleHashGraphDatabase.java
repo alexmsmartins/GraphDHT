@@ -69,6 +69,9 @@ public class SimpleHashGraphDatabase implements GraphDatabaseService {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+
+    //these methods should not be implemented for know
+
     public boolean enableRemoteShell() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
