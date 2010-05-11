@@ -17,6 +17,7 @@ import org.graphdht.dht.obj.Value;
  * @author root
  */
 public class DHTServer extends UnicastRemoteObject implements DHTService<Key, Value> {
+    //TODO from Alexandre -> the code should be using generics instead of Key and Value classes.
 
     public DHTServer() throws RemoteException {
         super();
