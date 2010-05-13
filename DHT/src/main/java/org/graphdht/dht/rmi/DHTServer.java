@@ -7,8 +7,6 @@ package org.graphdht.dht.rmi;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
-import org.graphdht.dht.obj.Key;
-import org.graphdht.dht.obj.Value;
 
 /**
  *

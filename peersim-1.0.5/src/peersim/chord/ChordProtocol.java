@@ -55,7 +55,9 @@ public class ChordProtocol implements EDProtocol {
         p.tid = Configuration.getPid(prefix + "." + PAR_TRANSPORT);
     }
 
-    /*
+    /**
+     *
+     * 
      * (non-Javadoc)
      *
      * @see peersim.edsim.EDProtocol#processEvent(peersim.core.Node, int,
