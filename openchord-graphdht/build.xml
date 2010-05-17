@@ -1,36 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- You may freely edit this file. See commented blocks below for -->
-<!-- some examples of how to customize the build. -->
-<!-- (If you delete it and reopen the project it will be recreated.) -->
-<!-- By default, only the Clean and Build commands use this build script. -->
-<!-- Commands such as Run, Debug, and Test only use this build script if -->
-<!-- the Compile on Save feature is turned off for the project. -->
-<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
-<!-- in the project's Project Properties dialog box.-->
-<project name="openchord-graphdht" default="default" basedir=".">
-    <description>Builds, tests, and runs the project openchord-graphdht.</description>
+<project name="graphdht-oc" default="graphdht-oc-dist" basedir=".">
+
+    <description>Builds, tests, and runs the project graphdht-oc.</description>
+
     <!--<import file="nbproject/build-impl.xml"/>-->
-    <!---->
-    <!-- --><property name="graph-dht-project" value="graphdht"/>
-    <property name="graph-dht-srcdir" value="src"/>
-    <property name="graph-dht-dstdir" value="build/classes"/>
-    <property name="graph-dht-impdir" value="lib"/>
-    <property name="graph-dht-bindir" value="bin"/>
-    <property name="graph-dht-file-init" value="graph-dht-init.jar"/>
-    <property name="graph-dht-file-join" value="graph-dht-join.jar"/>
+
+    <property name="graphdht.oc.project" value="graphdht"/>
+    <property name="graphdht.oc.srcdir" value="src"/>
+    <property name="graphdht.oc.dstdir" value="build/classes"/>
+    <property name="graphdht.oc.impdir" value="lib"/>
+    <property name="graphdht.oc.bindir" value="bin"/>
+    <property name="graphdht.oc.file" value="graphdht-oc.jar"/>
 
 
-
-    <target name="graph-dht-init">
-        <mkdir dir="${graph-dht-dstdir}"/>
-        <mkdir dir="${graph-dht-bindir}"/>
+    <target name="graphdht-oc-init">
+        <mkdir dir="${graphdht.oc.dstdir}"/>
+        <mkdir dir="${graphdht.oc.bindir}"/>
     </target>
 
-    <target name="graph-dht-compile" depends="graph-dht-init">
-        <javac srcdir="${graph-dht-srcdir}" destdir="${graph-dht-dstdir}" debug="true">
+    <target name="graphdht-oc-compile" depends="graphdht-oc-init">
+        <javac srcdir="${graphdht.oc.srcdir}" destdir="${graphdht.oc.dstdir}" debug="true">
             <include name="**/*.java"/>
             <classpath>
-                <fileset dir="${graph-dht-impdir}">
+                <fileset dir="${graphdht.oc.impdir}">
                     <include name="**/*.jar"/>
                     <include name="**/*.zip"/>
                 </fileset>
@@ -38,27 +30,22 @@
         </javac>
     </target>
 
-    <target name="graph-dht-dist" depends="graph-dht-compile">
-        <pathconvert  property="graph-dht-class-path-flat" pathsep=" ">
-            <path id="graph-dht-class-path">
+    <target name="graphdht-oc-dist" depends="graphdht-oc-compile">
+        <pathconvert targetos="unix" property="graphdht.oc.classpath" pathsep=" ">
+            <path id="graphdht.oc.cp">
                 <pathelement location="config/" />
-                <fileset dir="${graph-dht-impdir}" />
+                <fileset dir="${graphdht.oc.impdir}" />
             </path>
-            <regexpmapper from="${graph-dht-project}\\(.*)" to="\1" />
+            <regexpmapper from="${graphdht.oc.project}(.*)" to=".\1" />
         </pathconvert>
 
-        <jar destfile="${graph-dht-bindir}/${graph-dht-file-init}" basedir="${graph-dht-dstdir}/">
+        <jar destfile="${graphdht.oc.bindir}/${graphdht.oc.file}" basedir="${graphdht.oc.dstdir}/">
             <manifest>
                 <attribute name="Main-Class" value="org.graphdht.openchord.Init"/>
-                <attribute name="Class-Path" value="${graph-dht-class-path-flat}"/>
+                <attribute name="Class-Path" value="${graphdht.oc.classpath}"/>
             </manifest>
         </jar>
-        <jar destfile="${graph-dht-bindir}/${graph-dht-file-join}" basedir="${graph-dht-dstdir}/">
-            <manifest>
-                <attribute name="Main-Class" value="org.graphdht.openchord.Join"/>
-                <attribute name="Class-Path" value="${graph-dht-class-path-flat}"/>
-            </manifest>
-        </jar>
+
 
         <copy todir="bin/lib/" >
             <fileset dir="lib" />
@@ -71,12 +58,12 @@
         </copy>
     </target>
 
-
-    <target name="jar" depends="graph-dht-dist" />
+    <target name="jar" depends="graphdht-oc-dist" />
+    <target name="build" depends="graphdht-oc-dist" />
+    <target name="dist" depends="graphdht-oc-dist" />
+    
     <target name="clean">
-        <!-- <delete dir="build"/>
-        <delete dir="bin" />-->
+        <delete dir="build"/>
+        <delete dir="bin" />
     </target>
-
-
 </project>
