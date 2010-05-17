@@ -3,7 +3,6 @@ peersim-1.0.5/build/
 peersim-1.0.5/nbproject/private/
 neo4j/kernel-1.0/target/
 neo4j/remote-graphdb-0.6/target/
-DHT/target/
 neo4j/hash-graph/target/
 neo4j/hash-graph/var/
 openchord-graphdht/build/

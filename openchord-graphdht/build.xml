@@ -11,7 +11,7 @@
     <description>Builds, tests, and runs the project openchord-graphdht.</description>
     <!--<import file="nbproject/build-impl.xml"/>-->
     <!---->
-    <property name="graph-dht-project" value="graphdht"/>
+    <!-- --><property name="graph-dht-project" value="graphdht"/>
     <property name="graph-dht-srcdir" value="src"/>
     <property name="graph-dht-dstdir" value="build/classes"/>
     <property name="graph-dht-impdir" value="lib"/>
@@ -46,7 +46,6 @@
             </path>
             <regexpmapper from="${graph-dht-project}\\(.*)" to="\1" />
         </pathconvert>
-        <echo>CP is:  ${graph-dht-class-path-flat}</echo>
 
         <jar destfile="${graph-dht-bindir}/${graph-dht-file-init}" basedir="${graph-dht-dstdir}/">
             <manifest>
@@ -75,8 +74,8 @@
 
     <target name="jar" depends="graph-dht-dist" />
     <target name="clean">
-        <delete dir="build"/>
-        <delete dir="dist" />
+        <!-- <delete dir="build"/>
+        <delete dir="bin" />-->
     </target>
 
 
