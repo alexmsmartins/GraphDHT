@@ -6,3 +6,7 @@ neo4j/remote-graphdb-0.6/target/
 DHT/target/
 neo4j/hash-graph/target/
 neo4j/hash-graph/var/
+openchord-graphdht/build/
+openchord-graphdht/dist/
+openchord-graphdht/nbproject/private/
+openchord-graphdht/bin/
