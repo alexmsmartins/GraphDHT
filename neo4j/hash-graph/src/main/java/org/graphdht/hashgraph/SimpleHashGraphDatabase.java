@@ -6,14 +6,21 @@
 package org.graphdht.hashgraph;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.graphdht.dht.rmi.DHTService;
+import org.graphdht.hashcontainer.SimpleDHT;
+import org.graphdht.hashgraph.OverFlowException;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.kernel.impl.transaction.TransactionFailureException;
 
+import javax.transaction.TransactionManager;
 
 
 /**
@@ -23,35 +30,51 @@ import org.neo4j.graphdb.Transaction;
 public class SimpleHashGraphDatabase implements GraphDatabaseService {
 
     //FIXME Lets try to write the code here directly but later we have to change it
-    ConcurrentHashMap<Long, Node> nodeMap;
-    ConcurrentHashMap<Long, Relationship> relationshipMap;
-
+    SimpleDHT<Node> nodeMap;
+    SimpleDHT<Relationship> relationshipMap;
 
     SimpleHashGraphDatabase(String string) {
-        nodeMap = new ConcurrentHashMap<Long, Node>();
-        relationshipMap = new ConcurrentHashMap<Long, Relationship>();
+        nodeMap = new SimpleDHT<Node>();
+        relationshipMap = new SimpleDHT<Relationship>();
     }
 
     public Node createNode() {
-        Node node = new SimpleNode();
-        //TODO id generation code
+        Node node = null;
+        try {
+            node = new SimpleNode(generateNextId(), this.nodeMap);
+        } catch (OverFlowException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return null;
+        }
         return node;
 
     }
 
     public Node getNodeById(long id) {
-        //TODO implement
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            return this.nodeMap.get(id);
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     public Relationship getRelationshipById(long id) {
-        //TODO implement
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            return this.relationshipMap.get(id);
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     public Node getReferenceNode() {
-        //TODO implement
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            return this.nodeMap.get(new Long(Long.MIN_VALUE));
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     public Iterable<Node> getAllNodes() {
@@ -81,7 +104,60 @@ public class SimpleHashGraphDatabase implements GraphDatabaseService {
     }
 
     public Transaction beginTx() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        System.out.println("Stub transaction started!!");
+        return new PlaceboTransaction(null);
+    }
+
+    //private methods that need to be changed or put alsewhere
+    static long nextId = Long.MIN_VALUE;
+    static boolean thereIsNextId = true;
+
+    private static long generateNextId() throws OverFlowException{
+        if(thereIsNextId == false){
+            throw new OverFlowException();
+        }
+        if(nextId == Long.MAX_VALUE){
+            thereIsNextId = false; //last value guaranteed to be unique
+        }
+        return nextId++;
+    }
+
+    /**
+     * This class should be kept like this
+     * Since this is an implementation of Neo4J over Chord two different aspects must be balanced
+     *  - Neo4J transaction tests must pass
+     *  - Chord is non transactional so real transactions should not occur
+     */
+    private static class PlaceboTransaction implements Transaction
+    {
+        private final TransactionManager transactionManager;
+
+        PlaceboTransaction( TransactionManager transactionManager )
+        {
+            // we should override all so null is ok
+            this.transactionManager = transactionManager;
+        }
+
+        public void failure()
+        {
+            try
+            {
+                transactionManager.getTransaction().setRollbackOnly();
+            }
+            catch ( Exception e )
+            {
+                throw new TransactionFailureException(
+                    "Failed to mark transaction as rollback only.", e );
+            }
+        }
+
+        public void success()
+        {
+        }
+
+        public void finish()
+        {
+        }
     }
 
 }

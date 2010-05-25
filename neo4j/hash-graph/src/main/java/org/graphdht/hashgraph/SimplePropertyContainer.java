@@ -14,7 +14,12 @@ import org.neo4j.graphdb.PropertyContainer;
  * @author alex
  */
 public class SimplePropertyContainer implements PropertyContainer {
-    Map<String, Object>  properties = new Hashtable();
+    Map<String, Object>  properties;
+
+    SimplePropertyContainer(){
+        properties = new Hashtable();
+    }
+
 
     public boolean hasProperty(String key) {
         return this.properties.containsKey(key);

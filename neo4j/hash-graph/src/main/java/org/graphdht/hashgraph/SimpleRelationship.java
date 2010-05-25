@@ -6,6 +6,9 @@
 package org.graphdht.hashgraph;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
+
+import org.graphdht.dht.rmi.DHTService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
@@ -14,19 +17,38 @@ import org.neo4j.graphdb.RelationshipType;
  *
  * @author alex
  */
-public class SimpleRelationship extends SimplePropertyContainer
-        implements Relationship, Serializable {
+public class SimpleRelationship extends SimplePrimitive implements Relationship, Serializable {
+
+    //TODO - WRONG BUT SHOULD CONTINUE HERE
+    long startNode;
+    long endNode;
+
+    public SimpleRelationship(long id, DHTService<Long, SimpleRelationship> service){
+        super(id, service);
+    }
+
 
     public long getId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return id;
     }
 
     public void delete() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            dht.remove(
+                    new Long(this.getId())
+            );
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }        
     }
 
     public Node getStartNode() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            return (Node) dht.get( new Long(Long.MIN_VALUE) );
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        };
+        return null;
     }
 
     public Node getEndNode() {

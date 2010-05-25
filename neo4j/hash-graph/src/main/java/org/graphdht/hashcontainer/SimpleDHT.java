@@ -6,7 +6,11 @@
 package org.graphdht.hashcontainer;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.graphdht.dht.obj.Key;
+import org.graphdht.dht.obj.Value;
 import org.graphdht.dht.rmi.DHTService;
 
 /**
@@ -15,19 +19,26 @@ import org.graphdht.dht.rmi.DHTService;
  */
 public class SimpleDHT<T> implements DHTService<Long, T> {
 
-    public T get(Long key) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    HashMap chordDHTInFuture;
+
+    public SimpleDHT(){
+        super();
+        chordDHTInFuture = new HashMap<Long,T>();
     }
 
-    public T put(Long key, T value) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public T get(Long aLong) throws RemoteException {
+        return (T) this.chordDHTInFuture.get(aLong);
     }
 
-    public T remove(Long key) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public T put(Long aLong, T t) throws RemoteException {
+        return (T) this.chordDHTInFuture.put(aLong,t);
     }
 
-    public void putAll(Map<Long,T> m) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public T remove(Long aLong) throws RemoteException {
+        return this.remove(aLong);
+    }
+
+    public void putAll(Map<Long, T> longTMap) throws RemoteException {
+        this.chordDHTInFuture.putAll(longTMap);
     }
 }
