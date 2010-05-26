@@ -7,7 +7,10 @@ package org.graphdht.hashgraph;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.graphdht.dht.rmi.DHTService;
 import org.graphdht.hashcontainer.SimpleDHT;
@@ -25,6 +28,8 @@ import org.neo4j.graphdb.Traverser.Order;
  * @author alex
  */
 public class SimpleNode extends SimplePrimitive implements Node, Serializable {
+
+    List<Relationship> relationships = new ArrayList();
 
     public SimpleNode(long id, SimpleDHT<Node> service){
         super(id, service);
@@ -45,19 +50,35 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     }
 
     public Iterable<Relationship> getRelationships() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.relationships;
     }
 
     public boolean hasRelationship() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return relationships.size() > 0?true:false;
     }
 
     public Iterable<Relationship> getRelationships(RelationshipType... types) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Relationship> r = new LinkedList();
+        for (Relationship rel : this.relationships ){
+            for(RelationshipType relType : types ){
+                if(rel.getType() == relType){
+                    r.add(rel);
+                }
+            }
+        }
+        return r;
     }
 
     public boolean hasRelationship(RelationshipType... types) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<Relationship> r = new LinkedList();
+        for (Relationship rel : this.relationships ){
+            for(RelationshipType relType : types ){
+                if(rel.getType() == relType){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public Iterable<Relationship> getRelationships(Direction dir) {
@@ -96,9 +117,9 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
+    @Deprecated //cast from long to int might cause probles
     public int hashCode(){
-        throw new UnsupportedOperationException("Not supported yet due to possibility of failure.");
+        return (int)this.getId();
     }
 
     public boolean equals(Object obj) {

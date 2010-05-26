@@ -109,7 +109,8 @@ public class SimpleHashGraphDatabase implements GraphDatabaseService {
     }
 
     //private methods that need to be changed or put alsewhere
-    static long nextId = Long.MIN_VALUE;
+    //-1 is used by Neo4J Embedded to represent an id of something that does not exist
+    static long nextId = 0;
     static boolean thereIsNextId = true;
 
     private static long generateNextId() throws OverFlowException{

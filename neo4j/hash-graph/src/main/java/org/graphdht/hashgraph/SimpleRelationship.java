@@ -19,14 +19,44 @@ import org.neo4j.graphdb.RelationshipType;
  */
 public class SimpleRelationship extends SimplePrimitive implements Relationship, Serializable {
 
-    //TODO - WRONG BUT SHOULD CONTINUE HERE
-    long startNode;
-    long endNode;
+    
+    private final long startNodeId;
+    private final long endNodeId;
+    private final RelationshipType type;
 
-    public SimpleRelationship(long id, DHTService<Long, SimpleRelationship> service){
-        super(id, service);
+    // Dummy constructor for NodeManager to acquire read lock on relationship
+    // when loading from PL.
+    SimpleRelationship( long id,  DHTService<Long, SimpleRelationship> service) throws RemoteException {
+        super( id, service );
+        Relationship tmp = (Relationship) service.get(id);
+        if(tmp != null ){
+            this.startNodeId = tmp.getStartNode().getId();
+            this.endNodeId = tmp.getEndNode().getId();
+            this.type = tmp.getType();
+        } else {
+            this.startNodeId = -1;
+            this.endNodeId = -1;
+            this.type = null;
+        }
     }
 
+    SimpleRelationship( int id, int startNodeId, int endNodeId,
+        RelationshipType type, boolean newRel,  DHTService<Long, SimpleRelationship> service)
+    {
+        super( id, service );
+        if ( type == null )
+        {
+            throw new IllegalArgumentException( "Null type" );
+        }
+        if ( startNodeId == endNodeId )
+        {
+            throw new IllegalArgumentException( "Start node equals end node" );
+        }
+
+        this.startNodeId = startNodeId;
+        this.endNodeId = endNodeId;
+        this.type = type;
+    }
 
     public long getId() {
         return id;
@@ -44,31 +74,41 @@ public class SimpleRelationship extends SimplePrimitive implements Relationship,
 
     public Node getStartNode() {
         try {
-            return (Node) dht.get( new Long(Long.MIN_VALUE) );
+            return (Node)dht.get(new Long(this.endNodeId));
         } catch (RemoteException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        };
+        }
         return null;
     }
 
     public Node getEndNode() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            return (Node)dht.get(new Long(this.endNodeId));
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     public Node getOtherNode(Node node) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(node.getId() == this.startNodeId){
+            return this.getEndNode();
+        } else if(node.getId() == this.endNodeId){
+            return this.getEndNode();
+        } else {
+            return null;
+        }
     }
 
     public Node[] getNodes() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Node[] {this.getStartNode(), this.getEndNode()};
     }
 
     public RelationshipType getType() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.type;
     }
 
     public boolean isType(RelationshipType type) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.type == type;
     }
-
 }
