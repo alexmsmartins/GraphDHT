@@ -8,25 +8,24 @@
  * Pedro Alexandre Mesquita Santos Martins - pamm@dei.uc.pt
  * Nuno Manuel dos Santos Antunes - nmsa@dei.uc.pt
  **********************************************************/
-package org.graphdht.openchord;
+package org.graphdht.openchord.rmi;
 
 import de.uniba.wiai.lspi.chord.service.Key;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
+ * RMI Interface to be used to preform DHT operations
+ * Adapted to correspon to Open Chord Operations.
  *
- * @author nuno
+ * 
+ * @author nmsa@dei.uc.pt
  */
-public class LongKey implements Key, Serializable {
+public interface OChordService<K extends Key, V extends Serializable> {
 
-    private final String key;
+    public Set<Serializable> retrieve(Key key);
 
-    public LongKey(String key) {
-        this.key = key;
-    }
+    public void insert(Key key, Serializable srlzbl);
 
-    @Override
-    public byte[] getBytes() {
-        return key.getBytes();
-    }
+    public void remove(Key key, Serializable srlzbl);
 }

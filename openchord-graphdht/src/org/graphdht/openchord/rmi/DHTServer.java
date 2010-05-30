@@ -15,8 +15,6 @@ import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import static org.graphdht.openchord.DHTConstants.*;
@@ -31,7 +29,6 @@ import static org.graphdht.openchord.DHTConstants.*;
  * @author root
  */
 public class DHTServer<K extends Key, V extends Serializable> extends UnicastRemoteObject implements DHTService<K, V> {
-    
 
     private final Chord chord;
     private final String name;
@@ -39,51 +36,59 @@ public class DHTServer<K extends Key, V extends Serializable> extends UnicastRem
     public DHTServer(Chord chord) throws RemoteException {
         super();
         this.chord = chord;
-        this.name = GDHT_RMI_BASENAME + chord.getURL().getPort();
+        this.name = GDHT_RMI_BASENAME + (chord.getURL().getPort() > 0 ? chord.getURL().getPort() : GDHT_OPENCHORD_I_PORT);
+        System.out.println(name);
     }
 
     public void start() {
-        try {
-            Registry registry = null;
-            try {
-                registry = LocateRegistry.getRegistry(GDHT_HOST, GDHT_RMIREGISTRY_PORT);
-            } catch (Exception e) {
-                System.out.println("Get error");
-                e.printStackTrace();
-            }
-            registry.bind(name, this);
-            System.out.println("\n\nGraphDHT node UP!\n\n");
-        } catch (Exception e) {
-            System.out.println("Cannot set up GraphDHT node!!!");
-            e.printStackTrace();
+        boolean binded = RMIManager.bindRemoteObject(name, this);
+        if (binded) {
+            System.out.println("RMI : GraphDHT node UP!");
+        } else {
+            System.out.println("RMI: Failure setting node UP!");
         }
     }
 
     @Override
-    public V get(K key) {
+    public V get(K key) throws RemoteException {
+        System.out.println("TO BE COMPLETED");
         try {
-            chord.retrieve(key);
+            return (V) chord.retrieve(key);
         } catch (ServiceException ex) {
             ex.printStackTrace();
+            return null;
         }
-        System.out.println("To implement!!!");
-        return null;
     }
 
     @Override
-    public V put(K key, V value) {
-        System.out.println("To implement!!!");
-        return null;
+    public V put(K key, V value) throws RemoteException {
+        System.out.println("TO BE COMPLETED");
+        try {
+            chord.insert(key, value);
+            System.out.println("insert");
+            return value;
+        } catch (ServiceException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override
-    public V remove(K key) {
-        System.out.println("To implement!!!");
-        return null;
+    public V remove(K key) throws RemoteException {
+        System.out.println("TO BE IMPLEMENTED");
+//        try {
+//            chord.remove(key, key);
+//            System.out.println("insert");
+//            return value;
+//        } catch (ServiceException ex) {
+//            ex.printStackTrace();
+            return null;
+//        }
     }
 
     @Override
-    public void putAll(Map<K, V> m) {
-        System.out.println("To implement!!!");
+    public void putAll(Map<K, V> m) throws RemoteException {
+        System.out.println("TO BE IMPLEMENTED...");
     }
 }
