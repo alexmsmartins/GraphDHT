@@ -56,7 +56,7 @@ public class Init {
         }
 
         URL nodesURL = null;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < GDHT_SIMULATION_NODECOUNT; i++) {
             try {
                 nodesURL = new URL(nodeNamePrefix + (nodeId++) + nodeNameSuffix);
             } catch (MalformedURLException ex) {

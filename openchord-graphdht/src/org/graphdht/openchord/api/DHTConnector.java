@@ -12,15 +12,12 @@ package org.graphdht.openchord.api;
 
 import de.uniba.wiai.lspi.chord.service.Key;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 import org.graphdht.openchord.DHTConstants;
 import org.graphdht.openchord.LongKey;
 import org.graphdht.openchord.rmi.DHTService;
+import org.graphdht.openchord.rmi.RMIManager;
 
 /**
  *
@@ -28,66 +25,80 @@ import org.graphdht.openchord.rmi.DHTService;
  */
 public class DHTConnector<K extends Key, V extends Serializable> implements DHTService<K, V> {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
         System.out.println("Testing...");
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
         dc.connect();
-        final LongKey key = new LongKey();
-        dc.put(key, "cenass");
+        final LongKey key = new LongKey("10000");
+        Serializable put = dc.put(key, "cenass");
+        System.out.println("put = " + put);
+        put = dc.put(key, " stufes ...");
+        System.out.println("put = " + put);
+        put = dc.put(key, " aa ...");
+        System.out.println("put = " + put);
+        put = dc.put(key, " a ...");
+        System.out.println("put = " + put);
+        put = dc.put(key, " stufes ...");
+        System.out.println("put = " + put);
+        put = dc.put(key, " a ...");
+        put = dc.put(key, " 1 ...");
+        put = dc.put(key, " 2 ...");
+        put = dc.put(key, " 3 ...");
+        put = dc.put(key, " 4 ...");
+        put = dc.put(key, " 5 ...");
+        put = dc.put(key, " 6 ...");
+        put = dc.put(key, " a ...");
+
         Serializable get = dc.get(key);
-        System.out.println(":::::" + get + "::");
-
-
+        System.out.println("get = " + get);
     }
+    /**
+     *
+     *
+     * 
+     */
     private final String host;
-    private final int port;
     private DHTService stub;
     private final String name;
 
     public DHTConnector(String host, int port) {
         this.host = host;
-        this.port = port;
-        this.name = "rmi://" + host + ":4099/" + DHTConstants.GDHT_RMI_BASENAME + port;
+        this.name = DHTConstants.GDHT_RMI_BASENAME + port;
         System.out.println(name);
 
     }
 
     public boolean connect() {
         try {
-            //        reference =
-            Remote lookup = Naming.lookup(name);
-            System.out.println("r: " + lookup);
-            System.out.println("r: " + lookup.toString());
-            System.out.println("r: " + lookup.getClass());
-            System.out.println("r: " + lookup.hashCode());
+            stub = (DHTService) RMIManager.findRemoteObject(host, name);
+            System.out.println("stub = " + stub);
             return true;
-        } catch (NotBoundException ex) {
-            ex.printStackTrace();
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+    }
+
+    public void release() {
+        stub = null;
     }
 
     @Override
-    public V get(K key) {
+    public V get(K key) throws RemoteException {
         return (V) stub.get(key);
     }
 
     @Override
-    public V put(K key, V value) {
+    public V put(K key, V value) throws RemoteException {
         return (V) stub.put(key, value);
     }
 
     @Override
-    public V remove(K key) {
+    public V remove(K key) throws RemoteException {
         return (V) stub.remove(key);
     }
 
     @Override
-    public void putAll(Map<K, V> m) {
+    public void putAll(Map<K, V> m) throws RemoteException {
         stub.putAll(m);
     }
 }

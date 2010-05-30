@@ -10,6 +10,8 @@
  **********************************************************/
 package org.graphdht.openchord.rmi;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
@@ -20,7 +22,7 @@ import java.util.Map;
  * @author pamm@dei.uc.pt
  * @author nmsa@dei.uc.pt
  */
-public interface DHTService<K, V> {
+public interface DHTService<K, V> extends Remote {
 
     /**
      * Returns the value to which the specified key is mapped,
@@ -45,7 +47,7 @@ public interface DHTService<K, V> {
      * @throws NullPointerException if the specified key is null and this map
      *         does not permit null keys (optional)
      */
-    public V get(K key);
+    public V get(K key) throws RemoteException;
 
     /**
      * Associates the specified value with the specified key in this map
@@ -71,7 +73,7 @@ public interface DHTService<K, V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public V put(K key, V value);
+    public V put(K key, V value) throws RemoteException;
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -101,7 +103,7 @@ public interface DHTService<K, V> {
      * @throws NullPointerException if the specified key is null and this
      *         map does not permit null keys (optional)
      */
-    public V remove(K key);
+    public V remove(K key) throws RemoteException;
 
     /**
      * Copies all of the mappings from the specified map to this map
@@ -122,5 +124,5 @@ public interface DHTService<K, V> {
      * @throws IllegalArgumentException if some property of a key or value in
      *         the specified map prevents it from being stored in this map
      */
-    void putAll(Map<K, V> m);
+    void putAll(Map<K, V> m) throws RemoteException;
 }
