@@ -63,6 +63,10 @@ public class DHTConnector<K extends Key, V extends Serializable> implements DHTS
 
     public DHTConnector(String host, int port) {
         this.host = host;
+<<<<<<< HEAD
+=======
+        this.port = port;
+>>>>>>> e4a1eded73a9244f6828240d55ec5fb1d9d419b4
         this.name = DHTConstants.GDHT_RMI_BASENAME + port;
         System.out.println(name);
 
@@ -76,10 +80,13 @@ public class DHTConnector<K extends Key, V extends Serializable> implements DHTS
         } catch (Exception e) {
             return false;
         }
+<<<<<<< HEAD
     }
 
     public void release() {
         stub = null;
+=======
+>>>>>>> e4a1eded73a9244f6828240d55ec5fb1d9d419b4
     }
 
     @Override
