@@ -7,6 +7,9 @@ package org.graphdht.hashgraph;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -78,22 +81,26 @@ public class SimpleHashGraphDatabase implements GraphDatabaseService {
     }
 
     public Iterable<Node> getAllNodes() {
-        //TODO implement
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.nodeMap.getAllValues();
     }
 
     public Iterable<RelationshipType> getRelationshipTypes() {
-        //TODO implement
-        throw new UnsupportedOperationException("Not supported yet.");
+        Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
+        for(Relationship e: this.relationshipMap.getAllValues()){
+            if( !m.containsKey(e.getType() ) ){
+                m.put(e.getType(), 0);
+            }
+        }
+        return m.keySet();
     }
 
     public void shutdown() {
-        //TODO implement
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO perhaps it makes sense to shutdown Chord here
+        return ;
     }
 
 
-    //these methods should not be implemented for know
+    //these methods should not be implemented for remote DBs
 
     public boolean enableRemoteShell() {
         throw new UnsupportedOperationException("Not supported yet.");
