@@ -240,7 +240,7 @@ public class NeoStoreXaConnection extends XaConnectionHelpImpl
         public void createRelationship( int id, int firstNode, int secondNode,
             int type )
         {
-            xaCon.getNeoTransaction().relationshipCreate( id, firstNode,
+            xaCon.getNeoTransaction().relationshipCre   ate( id, firstNode,
                 secondNode, type );
         }
 

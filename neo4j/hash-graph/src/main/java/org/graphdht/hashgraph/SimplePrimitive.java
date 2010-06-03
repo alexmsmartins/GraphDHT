@@ -11,9 +11,9 @@ import org.graphdht.dht.rmi.DHTService;
  * To change this template use File | Settings | File Templates.
  */
 public class SimplePrimitive extends SimplePropertyContainer {
-    long id;
+    protected long id;
 
-    DHTService dht;
+    SimpleNodeManager dhtService;
 
     /**
      * This method is meant to be called by a Node or a Relationship implementation and never directly
@@ -21,10 +21,10 @@ public class SimplePrimitive extends SimplePropertyContainer {
      * @param id unique identifier for the Primitive 
      * @param service HashMap like service parametrized to the corresponding subclass
      */
-    protected SimplePrimitive(long id, DHTService service){
+    protected SimplePrimitive(long id, SimpleNodeManager service){
         super();
         this.id = id;
-        this.dht = service;
+        this.dhtService = service;
     }
 
 }

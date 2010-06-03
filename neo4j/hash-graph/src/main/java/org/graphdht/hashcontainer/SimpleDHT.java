@@ -41,4 +41,13 @@ public class SimpleDHT<T> implements DHTService<Long, T> {
     public void putAll(Map<Long, T> longTMap) throws RemoteException {
         this.chordDHTInFuture.putAll(longTMap);
     }
+
+    public Iterable<T> getAllValues(){
+        return chordDHTInFuture.values();
+    }
+
+    public Iterable<Long> getAllKeys(){
+        return chordDHTInFuture.keySet();
+    }
+
 }

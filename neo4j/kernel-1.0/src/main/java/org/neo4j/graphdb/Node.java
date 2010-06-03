@@ -371,4 +371,5 @@ public interface Node extends PropertyContainer
             StopEvaluator stopEvaluator,
             ReturnableEvaluator returnableEvaluator,
             Object... relationshipTypesAndDirections );
+
 }
