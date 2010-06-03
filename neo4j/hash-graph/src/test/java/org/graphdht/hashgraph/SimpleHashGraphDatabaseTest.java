@@ -9,14 +9,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 /**
  *
@@ -81,12 +78,12 @@ public class SimpleHashGraphDatabaseTest {
         System.out.println("\nEnd Getting Started Guide!");
     }
     /**
-     * Test of createNode method, of class SimpleHashGraphDatabase.
+     * Test of createNode method, of class SimpleNodeManager.
      *
     @Test
     public void testCreateNode() {
     System.out.println("createNode");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Node expResult = null;
     Node result = instance.createNode();
     assertEquals(expResult, result);
@@ -95,13 +92,13 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of getNodeById method, of class SimpleHashGraphDatabase.
+     * Test of getNodeById method, of class SimpleNodeManager.
      *
     @Test
     public void testGetNodeById() {
     System.out.println("getNodeById");
     long id = 0L;
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Node expResult = null;
     Node result = instance.getNodeById(id);
     assertEquals(expResult, result);
@@ -110,13 +107,13 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of getRelationshipById method, of class SimpleHashGraphDatabase.
+     * Test of getRelationshipById method, of class SimpleNodeManager.
      *
     @Test
     public void testGetRelationshipById() {
     System.out.println("getRelationshipById");
     long id = 0L;
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Relationship expResult = null;
     Relationship result = instance.getRelationshipById(id);
     assertEquals(expResult, result);
@@ -125,12 +122,12 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of getReferenceNode method, of class SimpleHashGraphDatabase.
+     * Test of getReferenceNode method, of class SimpleNodeManager.
      *
     @Test
     public void testGetReferenceNode() {
     System.out.println("getReferenceNode");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Node expResult = null;
     Node result = instance.getReferenceNode();
     assertEquals(expResult, result);
@@ -139,12 +136,12 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of getAllNodes method, of class SimpleHashGraphDatabase.
+     * Test of getAllNodes method, of class SimpleNodeManager.
      *
     @Test
     public void testGetAllNodes() {
     System.out.println("getAllNodes");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Iterable expResult = null;
     Iterable result = instance.getAllNodes();
     assertEquals(expResult, result);
@@ -153,12 +150,12 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of getRelationshipTypes method, of class SimpleHashGraphDatabase.
+     * Test of getRelationshipTypes method, of class SimpleNodeManager.
      *
     @Test
     public void testGetRelationshipTypes() {
     System.out.println("getRelationshipTypes");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Iterable expResult = null;
     Iterable result = instance.getRelationshipTypes();
     assertEquals(expResult, result);
@@ -167,24 +164,24 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of shutdown method, of class SimpleHashGraphDatabase.
+     * Test of shutdown method, of class SimpleNodeManager.
      *
     @Test
     public void testShutdown() {
     System.out.println("shutdown");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     instance.shutdown();
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");
     }
 
     /**
-     * Test of enableRemoteShell method, of class SimpleHashGraphDatabase.
+     * Test of enableRemoteShell method, of class SimpleNodeManager.
      *
     @Test
     public void testEnableRemoteShell_0args() {
     System.out.println("enableRemoteShell");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     boolean expResult = false;
     boolean result = instance.enableRemoteShell();
     assertEquals(expResult, result);
@@ -193,13 +190,13 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of enableRemoteShell method, of class SimpleHashGraphDatabase.
+     * Test of enableRemoteShell method, of class SimpleNodeManager.
      *
     @Test
     public void testEnableRemoteShell_Map() {
     System.out.println("enableRemoteShell");
     Map<String, Serializable> initialProperties = null;
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     boolean expResult = false;
     boolean result = instance.enableRemoteShell(initialProperties);
     assertEquals(expResult, result);
@@ -208,12 +205,12 @@ public class SimpleHashGraphDatabaseTest {
     }
 
     /**
-     * Test of beginTx method, of class SimpleHashGraphDatabase.
+     * Test of beginTx method, of class SimpleNodeManager.
      *
     @Test
     public void testBeginTx() {
     System.out.println("beginTx");
-    SimpleHashGraphDatabase instance = new SimpleHashGraphDatabase();
+    SimpleNodeManager instance = new SimpleNodeManager();
     Transaction expResult = null;
     Transaction result = instance.beginTx();
     assertEquals(expResult, result);

@@ -36,7 +36,7 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
      */
     List<Direction> relDirection = new ArrayList();
 
-    public SimpleNode(long id, SimpleDHT<Node> service) {
+    public SimpleNode(long id, SimpleNodeManager service) {
         super(id, service);
     }
 
@@ -45,13 +45,9 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     }
 
     public void delete() {
-        try {
-            dht.remove(
-                    new Long(this.getId())
-            );
-        } catch (RemoteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        this.dhtService.deleteNode(
+                new Long(this.getId())
+        );
     }
 
     public Iterable<Relationship> getRelationships() {
@@ -173,7 +169,25 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     }
 
     public Relationship createRelationshipTo(Node otherNode, RelationshipType type) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO check if there are previous relationships
+         //create relationship
+        //TODO this can be optimized by taking of the getRelationships(...) and doing everything in the foreach
+        Iterable<Relationship> relIt = this.getRelationships(type, Direction.OUTGOING);
+        for(Relationship rel: relIt ){
+            if(rel.getEndNode().equals(otherNode) && rel.getType() == type ){
+                return rel; //returns an existing relationship instead of creating a new one
+                //TODO check if returning an existing relationship is expected behaviour 
+            }
+        }
+        try {
+            return this.dhtService.createRelationship(this.id, otherNode.getId(), type);
+        } catch (OverFlowException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return null;
+        } catch (RemoteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return null;
+        }
     }
 
     public Traverser traverse(Order traversalOrder, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, RelationshipType relationshipType, Direction direction) {
@@ -186,6 +200,21 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
 
     public Traverser traverse(Order traversalOrder, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... relationshipTypesAndDirections) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+
+    protected Relationship deleteRelationship(long aLong){
+        for(int i=0;i<relationships.size(); i++){
+            if(this.relationships.get(i).getId() == aLong){
+                relDirection.remove(i);
+                Relationship rel = this.relationships.remove(i);
+                SimpleNode node = (SimpleNode)rel.getEndNode();
+                node.deleteRelationship(aLong);
+                return rel;
+            }
+        }
+        return null;
     }
 
     @Deprecated
