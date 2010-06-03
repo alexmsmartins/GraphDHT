@@ -8,10 +8,9 @@
  * Pedro Alexandre Mesquita Santos Martins - pamm@dei.uc.pt
  * Nuno Manuel dos Santos Antunes - nmsa@dei.uc.pt
  **********************************************************/
-package org.graphdht.openchord.rmi;
+package org.graphdht.openchord;
 
 import de.uniba.wiai.lspi.chord.service.Chord;
-import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -28,7 +27,7 @@ import static org.graphdht.openchord.DHTConstants.*;
  * @param <V>
  * @author nmsa@dei.uc.pt
  */
-public class DHTServer<K extends Key, V extends Serializable> extends UnicastRemoteObject implements DHTService<K, V> {
+public class DHTServer<K extends Serializable, V extends Serializable> extends UnicastRemoteObject implements DHTService<K, V> {
 
     private final Chord chord;
     private final String name;
@@ -53,7 +52,8 @@ public class DHTServer<K extends Key, V extends Serializable> extends UnicastRem
     public V get(K key) throws RemoteException {
         System.out.println("TO BE COMPLETED");
         try {
-            return (V) chord.retrieve(key);
+
+            return (V) chord.retrieve(new DHTKey(key));
         } catch (ServiceException ex) {
             ex.printStackTrace();
             return null;
@@ -64,7 +64,7 @@ public class DHTServer<K extends Key, V extends Serializable> extends UnicastRem
     public V put(K key, V value) throws RemoteException {
         System.out.println("TO BE COMPLETED");
         try {
-            chord.insert(key, value);
+            chord.insert(new DHTKey(key), value);
             System.out.println("insert");
             return value;
         } catch (ServiceException ex) {
@@ -83,7 +83,7 @@ public class DHTServer<K extends Key, V extends Serializable> extends UnicastRem
 //            return value;
 //        } catch (ServiceException ex) {
 //            ex.printStackTrace();
-            return null;
+        return null;
 //        }
     }
 

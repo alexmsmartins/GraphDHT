@@ -8,45 +8,24 @@
  * Pedro Alexandre Mesquita Santos Martins - pamm@dei.uc.pt
  * Nuno Manuel dos Santos Antunes - nmsa@dei.uc.pt
  **********************************************************/
-package org.graphdht.openchord.rmi;
+package org.graphdht.openchord;
 
-import de.uniba.wiai.lspi.chord.service.Key;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Map;
-import org.graphdht.openchord.DHTConstants;
-import org.graphdht.openchord.rmi.DHTService;
-import org.graphdht.openchord.rmi.RMIManager;
 
 /**
  *
  * @author nuno
  */
-public class DHTConnector<K extends Key, V extends Serializable> implements DHTService<K, V> {
+public class DHTConnector<K extends Serializable, V extends Serializable> implements DHTService<K, V> {
 
     public static void main(String[] args) throws RemoteException {
-        System.out.println("Testing...");
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
         dc.connect();
-        final LongKey key = new LongKey("10000");
+        String key = "10000";
         Serializable put = dc.put(key, "cenass");
         System.out.println("put = " + put);
-        put = dc.put(key, " stufes ...");
-        System.out.println("put = " + put);
-        put = dc.put(key, " aa ...");
-        System.out.println("put = " + put);
-        put = dc.put(key, " a ...");
-        System.out.println("put = " + put);
-        put = dc.put(key, " stufes ...");
-        System.out.println("put = " + put);
-        put = dc.put(key, " a ...");
-        put = dc.put(key, " 1 ...");
-        put = dc.put(key, " 2 ...");
-        put = dc.put(key, " 3 ...");
-        put = dc.put(key, " 4 ...");
-        put = dc.put(key, " 5 ...");
-        put = dc.put(key, " 6 ...");
-        put = dc.put(key, " a ...");
 
         Serializable get = dc.get(key);
         System.out.println("get = " + get);

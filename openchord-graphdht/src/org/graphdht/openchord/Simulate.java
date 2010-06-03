@@ -15,7 +15,6 @@ import de.uniba.wiai.lspi.chord.service.Chord;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import org.graphdht.openchord.rmi.DHTServer;
 
 import static org.graphdht.openchord.DHTConstants.*;
 

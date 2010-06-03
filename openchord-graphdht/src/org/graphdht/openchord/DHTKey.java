@@ -10,24 +10,23 @@
  **********************************************************/
 package org.graphdht.openchord;
 
+import de.uniba.wiai.lspi.chord.service.Key;
 import java.io.Serializable;
 
 /**
  *
  * @author nuno
  */
-public abstract class Message implements Serializable {
+public class DHTKey implements Key, Serializable {
 
-    public class Request extends Message {
+    private final Serializable key;
+
+    public DHTKey(Serializable key) {
+        this.key = key;
     }
 
-    public class Response extends Message {
-    }
-
-    public class PutMessage extends Message {
-    }
-
-    public class GetMessage extends Message {
+    @Override
+    public byte[] getBytes() {
+        return key.toString().getBytes();
     }
 }
-

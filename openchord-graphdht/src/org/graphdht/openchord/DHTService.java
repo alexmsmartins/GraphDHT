@@ -8,7 +8,7 @@
  * Pedro Alexandre Mesquita Santos Martins - pamm@dei.uc.pt
  * Nuno Manuel dos Santos Antunes - nmsa@dei.uc.pt
  **********************************************************/
-package org.graphdht.openchord.rmi;
+package org.graphdht.openchord;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

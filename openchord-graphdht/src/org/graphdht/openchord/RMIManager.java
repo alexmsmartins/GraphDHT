@@ -1,4 +1,4 @@
-package org.graphdht.openchord.rmi;
+package org.graphdht.openchord;
 
 import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
