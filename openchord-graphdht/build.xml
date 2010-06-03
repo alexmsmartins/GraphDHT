@@ -19,7 +19,7 @@
     </target>
 
     <target name="graphdht-oc-compile" depends="graphdht-oc-init">
-        <javac srcdir="${graphdht.oc.srcdir}" destdir="${graphdht.oc.dstdir}" debug="true">
+        <javac srcdir="${graphdht.oc.srcdir}" destdir="${graphdht.oc.dstdir}" debug="true"  >
             <include name="**/*.java"/>
             <classpath>
                 <fileset dir="${graphdht.oc.impdir}">
@@ -61,7 +61,7 @@
     <target name="jar" depends="graphdht-oc-dist" />
     <target name="build" depends="graphdht-oc-dist" />
     <target name="dist" depends="graphdht-oc-dist" />
-    
+
     <target name="clean">
         <delete dir="build"/>
         <delete dir="bin" />
