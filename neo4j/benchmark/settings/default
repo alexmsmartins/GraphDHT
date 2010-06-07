@@ -1,0 +1,22 @@
+#
+# Default configuration file for the benchmark framework
+#
+# Here parameters can be specified for all the different tests/benchmarks.
+# Comma separated lists will result in the test being run several times,
+# once for each value of the parameter. If several parameters have multiple
+# values they must have the same amount of values since they will be used as
+# in this example:
+#
+# test1.a = 1,2,3
+# test1.b = 4,5,6
+# test1.c = 7
+#
+# This results in three runs of test1, with parameters
+# (a=1,b=4,c=7), (a=2,b=5,c=7) and (a=3,c=6,c=7)
+#
+# The option "run" for each test specifies if the test should be run or not.
+# The global parameter "reporters" should be a list of reporter identifiers.
+
+TestExample.objects = 1000,10000
+TestExample.run = yes
+reporters = TextReporter

@@ -11,7 +11,6 @@
 package org.graphdht.openchord;
 
 import de.uniba.wiai.lspi.chord.data.URL;
-import de.uniba.wiai.lspi.chord.service.Chord;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -44,9 +43,9 @@ public class Simulate {
         } catch (MalformedURLException ex) {
             throw new RuntimeException("Could not create DHT!", ex);
         }
-        Chord chord = null;
+        ChordWrapper chord = null;
         try {
-            chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
+            chord = new ChordWrapper();
             chord.create(rootURL);
             System.out.println("Chord Started at " + rootURL);
         } catch (ServiceException e) {
@@ -62,7 +61,7 @@ public class Simulate {
                 throw new RuntimeException("Could not create DHT!", ex);
             }
             try {
-                Chord cnode = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
+                ChordWrapper cnode = new ChordWrapper();
                 cnode.join(nodesURL, rootURL);
                 System.out.println("Chord Started at " + nodesURL);
             } catch (ServiceException e) {

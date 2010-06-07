@@ -10,11 +10,11 @@
  **********************************************************/
 package org.graphdht.openchord;
 
-import de.uniba.wiai.lspi.chord.service.Chord;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.Map;
 import static org.graphdht.openchord.DHTConstants.*;
 
@@ -29,10 +29,10 @@ import static org.graphdht.openchord.DHTConstants.*;
  */
 public class DHTServer<K extends Serializable, V extends Serializable> extends UnicastRemoteObject implements DHTService<K, V> {
 
-    private final Chord chord;
+    private final ChordWrapper chord;
     private final String name;
 
-    public DHTServer(Chord chord) throws RemoteException {
+    public DHTServer(ChordWrapper chord) throws RemoteException {
         super();
         this.chord = chord;
         this.name = GDHT_RMI_BASENAME + (chord.getURL().getPort() > 0 ? chord.getURL().getPort() : GDHT_OPENCHORD_I_PORT);
@@ -50,45 +50,25 @@ public class DHTServer<K extends Serializable, V extends Serializable> extends U
 
     @Override
     public V get(K key) throws RemoteException {
-        System.out.println("TO BE COMPLETED");
-        try {
-
-            return (V) chord.retrieve(new DHTKey(key));
-        } catch (ServiceException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return (V) chord.get(new DHTKey(key)); // HERE
     }
 
     @Override
     public V put(K key, V value) throws RemoteException {
-        System.out.println("TO BE COMPLETED");
-        try {
-            chord.insert(new DHTKey(key), value);
-            System.out.println("insert");
-            return value;
-        } catch (ServiceException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-
+        return (V) chord.put(new DHTKey(key), value);
     }
 
     @Override
     public V remove(K key) throws RemoteException {
-        System.out.println("TO BE IMPLEMENTED");
-//        try {
-//            chord.remove(key, key);
-//            System.out.println("insert");
-//            return value;
-//        } catch (ServiceException ex) {
-//            ex.printStackTrace();
-        return null;
-//        }
+        return (V) chord.remove(new DHTKey(key));
     }
 
     @Override
-    public void putAll(Map<K, V> m) throws RemoteException {
-        System.out.println("TO BE IMPLEMENTED...");
+    public void putAll(Map<K, V> values) throws RemoteException {
+        Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
+        for (K key : values.keySet()) {
+            map.put(new DHTKey(key), values.get(key));
+        }
+        chord.putAll(map);
     }
 }

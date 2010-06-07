@@ -11,7 +11,6 @@
 package org.graphdht.openchord;
 
 import de.uniba.wiai.lspi.chord.data.URL;
-import de.uniba.wiai.lspi.chord.service.Chord;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -65,7 +64,7 @@ public class Join {
 
         boolean joint = false;
         int att = 0;
-        Chord chord = new de.uniba.wiai.lspi.chord.service.impl.ChordImpl();
+        ChordWrapper chord = new ChordWrapper();
         do {
             try {
                 chord.join(localURL, bootstrapURL);
