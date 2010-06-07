@@ -26,19 +26,19 @@ public class SimpleDHT<T> implements DHTService<Long, T> {
         chordDHTInFuture = new HashMap<Long,T>();
     }
 
-    public T get(Long aLong) throws RemoteException {
+    public T get(Long aLong) {
         return (T) this.chordDHTInFuture.get(aLong);
     }
 
-    public T put(Long aLong, T t) throws RemoteException {
+    public T put(Long aLong, T t) {
         return (T) this.chordDHTInFuture.put(aLong,t);
     }
 
-    public T remove(Long aLong) throws RemoteException {
+    public T remove(Long aLong) {
         return this.remove(aLong);
     }
 
-    public void putAll(Map<Long, T> longTMap) throws RemoteException {
+    public void putAll(Map<Long, T> longTMap) {
         this.chordDHTInFuture.putAll(longTMap);
     }
 

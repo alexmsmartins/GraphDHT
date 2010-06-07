@@ -59,13 +59,9 @@ public class SimpleRelationship extends SimplePrimitive implements Relationship,
     }
 
     public void delete() {
-        try {
-            dhtService.deleteRelationship(
-                    new Long(this.getId())
-            );
-        } catch (RemoteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        dhtService.deleteRelationship(
+                new Long(this.getId())
+        );
     }
 
     public Node getStartNode() {

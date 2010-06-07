@@ -22,7 +22,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
 
     public static void main(String[] args) throws RemoteException {
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
-        dc.connect();
+        System.out.println("conn = " + dc.connect());
         String key = "10000";
         Serializable put = dc.put(key, "cenass");
         System.out.println("put = " + put);
@@ -51,6 +51,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
             System.out.println("stub = " + stub);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }

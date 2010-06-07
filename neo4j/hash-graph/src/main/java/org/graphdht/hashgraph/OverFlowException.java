@@ -7,5 +7,5 @@ package org.graphdht.hashgraph;
  * Time: 0:57:02
  * To change this template use File | Settings | File Templates.
  */
-public class OverFlowException extends Exception {
+public class OverFlowException extends RuntimeException {
 }

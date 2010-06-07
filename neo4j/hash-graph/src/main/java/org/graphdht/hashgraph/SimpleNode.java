@@ -130,7 +130,7 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
             Direction d;
             Relationship rel;
             for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                if ( (dir == Direction.BOTH || d == dir ) &&  rel.isType(type) ) {
+                if ((dir == Direction.BOTH || d == dir) && rel.isType(type)) {
                     c.add(rel);
                 }
             }
@@ -145,7 +145,7 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
             Direction d;
             Relationship rel;
             for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                if ((dir == Direction.BOTH || d == dir ) &&  rel.isType(type) ) {
+                if ((dir == Direction.BOTH || d == dir) && rel.isType(type)) {
                     return true;
                 }
             }
@@ -160,7 +160,7 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
             Direction d;
             Relationship rel;
             for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                if ( (dir == Direction.BOTH || d == dir ) &&  rel.isType(type) ) {
+                if ((dir == Direction.BOTH || d == dir) && rel.isType(type)) {
                     return rel;
                 }
             }
@@ -169,26 +169,35 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     }
 
     public Relationship createRelationshipTo(Node otherNode, RelationshipType type) {
+        Relationship rel;
+        Direction currDir;
         //TODO check if there are previous relationships
-         //create relationship
+
+        //create relationship
         //TODO this can be optimized by taking of the getRelationships(...) and doing everything in the foreach
         Iterable<Relationship> relIt = this.getRelationships(type, Direction.OUTGOING);
-        for(Relationship rel: relIt ){
-            if(rel.getEndNode().equals(otherNode) && rel.getType() == type ){
+        for (int i = 0; i< relationships.size(); i++) {
+            rel = this.relationships.get(i);
+            currDir = this.relDirection.get(i);
+            if (rel.getEndNode().equals(otherNode) && rel.getType() == type && currDir == Direction.OUTGOING ) {
                 return rel; //returns an existing relationship instead of creating a new one
-                //TODO check if returning an existing relationship is expected behaviour 
+                //TODO check if returning an existing relationship is expected behaviour
             }
         }
-        try {
-            return this.dhtService.createRelationship(this.id, otherNode.getId(), type);
-        } catch (OverFlowException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            return null;
-        } catch (RemoteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            return null;
-        }
+
+        rel = this.dhtService.createRelationship(this.id, otherNode.getId(), type);
+
+        this.addRelationship(rel, Direction.OUTGOING );
+        ((SimpleNode)otherNode).addRelationship(rel, Direction.INCOMING );
+        return rel;
     }
+
+    protected Relationship addRelationship(Relationship rel, Direction dir) {
+        this.relationships.add(rel);
+        this.relDirection.add(dir);
+        return rel;
+    }
+
 
     public Traverser traverse(Order traversalOrder, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, RelationshipType relationshipType, Direction direction) {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -202,14 +211,12 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
-
-    protected Relationship deleteRelationship(long aLong){
-        for(int i=0;i<relationships.size(); i++){
-            if(this.relationships.get(i).getId() == aLong){
+    protected Relationship deleteRelationship(long aLong) {
+        for (int i = 0; i < relationships.size(); i++) {
+            if (this.relationships.get(i).getId() == aLong) {
                 relDirection.remove(i);
                 Relationship rel = this.relationships.remove(i);
-                SimpleNode node = (SimpleNode)rel.getEndNode();
+                SimpleNode node = (SimpleNode) rel.getEndNode();
                 node.deleteRelationship(aLong);
                 return rel;
             }
