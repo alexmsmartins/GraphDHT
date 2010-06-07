@@ -34,6 +34,9 @@ public class SimpleNodeManager {
     SimpleNodeManager() {
         nodeMap = new SimpleDHT<Node>();
         relationshipMap = new SimpleDHT<Relationship>();
+        //create reference node
+        Node referenceNode = new SimpleNode(0L, this);
+        nodeMap.put(referenceNode.getId(), referenceNode );
     }
 
     public Node createNode() {
@@ -92,7 +95,7 @@ public class SimpleNodeManager {
 
     //private methods that need to be changed or put alsewhere
     //-1 is used by Neo4J Embedded to represent an id of something that does not exist
-    static long nextId = 0;
+    static long nextId = 1;
     static boolean thereIsNextId = true;
 
     private static long generateNextId() {
@@ -116,14 +119,13 @@ public class SimpleNodeManager {
     }
 
     public Relationship createRelationship(long simpleNodeId, long otherNodeId, RelationshipType type) {
-        long relId = generateNextId();
         SimpleNode otherNode = (SimpleNode)this.nodeMap.get(otherNodeId);
         if (otherNode != null) {
-            Relationship rel = new SimpleRelationship(relId, simpleNodeId, otherNodeId, type, true, this);
-            this.relationshipMap.put(relId, rel);
+            Relationship rel = new SimpleRelationship(generateNextId(), simpleNodeId, otherNodeId, type, true, this);
+            this.relationshipMap.put(rel.getId(), rel);
             return rel;
         } else {
-            throw new org.neo4j.graphdb.NotFoundException();
+            throw new org.neo4j.graphdb.NotFoundException("The destiny node of this relationship does not exist in the graph");
         }
     }
 

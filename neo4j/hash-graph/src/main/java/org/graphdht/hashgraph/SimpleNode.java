@@ -171,11 +171,10 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     public Relationship createRelationshipTo(Node otherNode, RelationshipType type) {
         Relationship rel;
         Direction currDir;
-        //TODO check if there are previous relationships
 
-        //create relationship
         //TODO this can be optimized by taking of the getRelationships(...) and doing everything in the foreach
         Iterable<Relationship> relIt = this.getRelationships(type, Direction.OUTGOING);
+        //check if there are previous relationships
         for (int i = 0; i< relationships.size(); i++) {
             rel = this.relationships.get(i);
             currDir = this.relDirection.get(i);
@@ -185,8 +184,8 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
             }
         }
 
+        //create relationship
         rel = this.dhtService.createRelationship(this.id, otherNode.getId(), type);
-
         this.addRelationship(rel, Direction.OUTGOING );
         ((SimpleNode)otherNode).addRelationship(rel, Direction.INCOMING );
         return rel;

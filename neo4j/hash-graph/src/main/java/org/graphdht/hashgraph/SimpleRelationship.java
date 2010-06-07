@@ -18,8 +18,7 @@ import org.neo4j.graphdb.RelationshipType;
  */
 public class SimpleRelationship extends SimplePrimitive implements Relationship, Serializable {
 
-    private final long startNodeId;
-    private final long endNodeId;
+    private final long nodeId[] = new long[2];
     private final RelationshipType type;
 
     // Dummy constructor for NodeManager to acquire read lock on relationship
@@ -29,12 +28,12 @@ public class SimpleRelationship extends SimplePrimitive implements Relationship,
         super(id, service);
         Relationship tmp = (Relationship) service.getRelationshipById(id);
         if (tmp != null) {
-            this.startNodeId = tmp.getStartNode().getId();
-            this.endNodeId = tmp.getEndNode().getId();
+            this.nodeId[0] = tmp.getStartNode().getId();
+            this.nodeId[1] = tmp.getEndNode().getId();
             this.type = tmp.getType();
         } else {
-            this.startNodeId = -1;
-            this.endNodeId = -1;
+            this.nodeId[0] = -1;
+            this.nodeId[1] = -1;
             this.type = null;
         }
     }
@@ -49,8 +48,8 @@ public class SimpleRelationship extends SimplePrimitive implements Relationship,
             throw new IllegalArgumentException("Start node equals end node");
         }
 
-        this.startNodeId = startNodeId;
-        this.endNodeId = endNodeId;
+        this.nodeId[0] = startNodeId;
+        this.nodeId[1] = endNodeId;
         this.type = type;
     }
 
@@ -59,23 +58,21 @@ public class SimpleRelationship extends SimplePrimitive implements Relationship,
     }
 
     public void delete() {
-        dhtService.deleteRelationship(
-                new Long(this.getId())
-        );
+        dhtService.deleteRelationship(this.getId());
     }
 
     public Node getStartNode() {
-        return (Node) dhtService.getNodeById(new Long(this.startNodeId));
+        return (Node) dhtService.getNodeById(this.nodeId[0]);
     }
 
     public Node getEndNode() {
-        return (Node) dhtService.getNodeById(new Long(this.endNodeId));
+        return (Node) dhtService.getNodeById(this.nodeId[1]);
     }
 
     public Node getOtherNode(Node node) {
-        if (node.getId() == this.startNodeId) {
+        if (node.getId() == this.nodeId[0]) {
             return this.getEndNode();
-        } else if (node.getId() == this.endNodeId) {
+        } else if (node.getId() == this.nodeId[1]) {
             return this.getEndNode();
         } else {
             return null;
@@ -83,7 +80,9 @@ public class SimpleRelationship extends SimplePrimitive implements Relationship,
     }
 
     public Node[] getNodes() {
-        return new Node[]{this.getStartNode(), this.getEndNode()};
+        return new Node[]{
+                this.dhtService.getNodeById(this.nodeId[0]),
+                this.dhtService.getNodeById(this.nodeId[1])};
     }
 
     public RelationshipType getType() {

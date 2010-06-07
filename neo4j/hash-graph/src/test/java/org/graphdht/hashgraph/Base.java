@@ -59,14 +59,11 @@ abstract class Base {
                 buffer.append((char) b);
             }
         });
-        embeddedNeo = new EmbeddedGraphDatabase(STORE_DIR);
-        neo = new RemoteGraphDatabase(new LocalGraphDatabase(embeddedNeo));
+        neo = new SimpleHashGraphDatabase("database");
     }
 
     public void tearDown() {
         neo.shutdown();
-        embeddedNeo.shutdown();
-        markForRemoval(STORE_DIR);
         System.out.print(buffer);
     }
 
