@@ -10,6 +10,7 @@
     <module>kernel-1.0</module>
     <module>remote-graphdb-0.6</module>
     <module>hash-graph</module>
+    <module>benchmark</module>
   </modules>
 
   <url>http://components.neo4j.org/</url>
