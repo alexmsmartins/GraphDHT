@@ -8,7 +8,6 @@ package org.graphdht.hashgraph;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 
-import org.graphdht.dht.rmi.DHTService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;

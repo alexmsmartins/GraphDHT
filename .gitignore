@@ -6,6 +6,7 @@ openchord-graphdht/build/
 openchord-graphdht/dist/
 openchord-graphdht/nbproject/private/
 openchord-graphdht/bin/
+neo4j/benchmark/workload/*
 
 #ignore maven build directories in general
 target/
