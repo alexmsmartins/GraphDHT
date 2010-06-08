@@ -34,7 +34,7 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
      */
     List<Direction> relDirection = new ArrayList();
 
-    InternalTraverserFactory traverserFactory = new InternalTraverserFactory();
+    transient InternalTraverserFactory traverserFactory = new InternalTraverserFactory();
 
     public SimpleNode(long id, SimpleNodeManager service) {
         super(id, service);

@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class SimplePrimitive extends SimplePropertyContainer implements Serializable{
     protected long id;
 
-    SimpleNodeManager dhtService;
+    transient SimpleNodeManager dhtService;
 
     /**
      * This method is meant to be called by a Node or a Relationship implementation and never directly
