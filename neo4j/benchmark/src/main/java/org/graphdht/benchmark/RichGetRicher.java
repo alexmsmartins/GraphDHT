@@ -93,21 +93,18 @@ public class RichGetRicher {
             System.out.println("max = " + max);
             System.out.println("-----------------------");
 
-
-
             StringBuilder sb = new StringBuilder(graphname);
-            sb.append("RichGetRicher size:\t " + graph.size());
-            sb.append("AVG: \t" + (sum / (double) graph.size()));
-            sb.append("min: \t" + min);
-            sb.append("max: \t" + max);
-
+            sb.append("\n").append("RichGetRicher size:\t " + graph.size()).append("\n");
+            sb.append("AVG: \t" + (sum / (double) graph.size())).append("\n");
+            sb.append("min: \t" + min).append("\n");
+            sb.append("max: \t" + max).append("\n");
             Collections.sort(graph, new Comparator<Node>() {
 
                 public int compare(Node o1, Node o2) {
                     return o2.relations.size() - o1.relations.size();
                 }
             });
-            sb.append("\n");
+            sb.append("Number of Relations:\n");
             for (Node n : graph) {
                 sb.append(n.relations.size()).append("\n");
             }

@@ -89,12 +89,12 @@ public class Randomize {
             System.out.println("max = " + max);
             System.out.println("-----------------------");
 
-            sb.append("Randomize size:\t " + nodeCount);
-            sb.append("AVG: \t" + (sum / nodeCount));
-            sb.append("min: \t" + min);
-            sb.append("max: \t" + max);
+            sb.append("\n").append("Randomize size:\t " + nodeCount).append("\n");
+            sb.append("AVG: \t" + (sum / nodeCount)).append("\n");
+            sb.append("min: \t" + min).append("\n");
+            sb.append("max: \t" + max).append("\n");
             Arrays.sort(connected);
-            sb.append("\n");
+            sb.append("Number of Relations:\n");
             for (int i : connected) {
                 sb.append(i).append("\n");
             }
