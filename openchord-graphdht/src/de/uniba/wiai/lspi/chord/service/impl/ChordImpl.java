@@ -167,7 +167,6 @@ public class ChordImpl implements Chord, Report, AsynChord {
      * Constructor is hidden. Only constructor.
      */
     public ChordImpl() {
-        System.setSecurityManager(new GraphDHTSecurityManager());
         this.logger = Logger.getLogger(ChordImpl.class.getName()
                 + ".unidentified");
         this.logger.debug("Logger initialized.");

@@ -12,6 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.neo4j.graphdb.*;
+import org.graphdht.hashgraph.*;
 
 /**
  *
@@ -38,10 +39,6 @@ public class SimpleHashGraphDatabaseTest {
     public void tearDown() {
     }
 
-    public enum MyRelationshipType implements RelationshipType {
-        KNOWS
-    }
-
     /**
      * set of Tests fromNeo4J Getting Started Guide
      */
@@ -55,7 +52,7 @@ public class SimpleHashGraphDatabaseTest {
         try {
             Node firstNode = neo.createNode();
             Node secondNode = neo.createNode();
-            Relationship relationship = firstNode.createRelationshipTo(secondNode, MyRelationshipType.KNOWS);
+            Relationship relationship = firstNode.createRelationshipTo(secondNode, Constants.MyRelationshipType.KNOWS);
             firstNode.setProperty("message", "Hello, ");
             secondNode.setProperty("message", "world!");
             relationship.setProperty("message", "brave Neo ");
