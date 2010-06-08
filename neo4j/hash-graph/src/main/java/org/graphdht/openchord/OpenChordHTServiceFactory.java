@@ -15,6 +15,8 @@ import java.io.Serializable;
 public class OpenChordHTServiceFactory<V extends Serializable> implements HTServiceFactory{
     @Override
     public HTService createHTService() {
-        return new DHTConnector<Long,V>("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);  
+        DHTConnector service = new DHTConnector<Long,V>("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
+        service.connect();
+        return service;  
     }
 }
