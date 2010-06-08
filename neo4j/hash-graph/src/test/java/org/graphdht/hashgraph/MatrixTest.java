@@ -61,7 +61,7 @@ public class MatrixTest
     @Before
     public void connect()
     {
-        neo = new SimpleHashGraphDatabase( "graph.database.for.tests" );
+        neo = new SimpleHashGraphDatabase( "simple" );
     }
 
     @After

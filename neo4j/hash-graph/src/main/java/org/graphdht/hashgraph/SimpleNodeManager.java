@@ -6,17 +6,18 @@
 package org.graphdht.hashgraph;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.graphdht.dht.rmi.DHTService;
-import org.graphdht.hashcontainer.SimpleDHT;
-import org.graphdht.hashgraph.OverFlowException;
+import org.graphdht.hashcontainer.HTServiceFactory;
+import org.graphdht.hashcontainer.SimpleHT;
+import org.graphdht.hashcontainer.SimpleHTServiceFactory;
+import org.graphdht.openchord.OpenChordHTServiceFactory;
 import org.neo4j.graphdb.*;
 import org.neo4j.kernel.impl.transaction.TransactionFailureException;
 
 import javax.transaction.TransactionManager;
+
+import org.graphdht.dht.HTService;
 
 
 /**
@@ -24,15 +25,32 @@ import javax.transaction.TransactionManager;
  */
 public class SimpleNodeManager {
 
-
-    SimpleDHT<PropertyContainer> nodeAndRelMap;
-    //SimpleDHT<Node> nodeMap;
-    //SimpleDHT<Relationship> relationshipMap;
+    HTServiceFactory fact = null;
+    HTService<Long,PropertyContainer> nodeAndRelMap;
+    //SimpleHT<Node> nodeMap;
+    //SimpleHT<Relationship> relationshipMap;
 
     SimpleNodeManager() {
-        nodeAndRelMap = new SimpleDHT<PropertyContainer>();
-        //nodeMap = new SimpleDHT<Node>();
-        //relationshipMap = new SimpleDHT<Relationship>();
+        nodeAndRelMap = new SimpleHT<Long,PropertyContainer>();
+        //nodeMap = new SimpleHT<Node>();
+        //relationshipMap = new SimpleHT<Relationship>();
+        //create reference node
+        Node referenceNode = new SimpleNode(0L, this);
+        //nodeMap.put(referenceNode.getId(), referenceNode );
+        nodeAndRelMap.put(referenceNode.getId(), referenceNode );
+    }
+
+    public SimpleNodeManager(String config) {
+        if(config == "simple")
+            fact = new SimpleHTServiceFactory<PropertyContainer>();
+        else if(config == "openchord")
+            fact = new OpenChordHTServiceFactory<SimplePropertyContainer>();
+        else
+            throw new RuntimeException("Option for HTService not avilable");
+
+        nodeAndRelMap = fact.createHTService();
+        //nodeMap = new SimpleHT<Node>();
+        //relationshipMap = new SimpleHT<Relationship>();
         //create reference node
         Node referenceNode = new SimpleNode(0L, this);
         //nodeMap.put(referenceNode.getId(), referenceNode );

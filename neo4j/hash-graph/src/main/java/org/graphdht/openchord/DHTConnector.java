@@ -10,6 +10,8 @@
  **********************************************************/
 package org.graphdht.openchord;
 
+import org.graphdht.dht.HTService;
+
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -18,7 +20,7 @@ import java.util.Map;
  *
  * @author nuno
  */
-public class DHTConnector<K extends Serializable, V extends Serializable> implements DHTService<K, V> {
+public class DHTConnector<K extends Serializable, V extends Serializable> implements HTService<K, V> {
 
     public static void main(String[] args) throws RemoteException {
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
@@ -36,7 +38,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
      * 
      */
     private final String host;
-    private DHTService stub;
+    private HTService stub;
     private final String name;
 
     public DHTConnector(String host, int port) {
@@ -47,7 +49,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
 
     public boolean connect() {
         try {
-            stub = (DHTService) RMIManager.findRemoteObject(host, name);
+            stub = (HTService) RMIManager.findRemoteObject(host, name);
             System.out.println("stub = " + stub);
             return true;
         } catch (Exception e) {
@@ -61,22 +63,27 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
     }
 
     @Override
-    public V get(K key) throws RemoteException {
+    public V get(K key) {
         return (V) stub.get(key);
     }
 
     @Override
-    public V put(K key, V value) throws RemoteException {
+    public V put(K key, V value) {
         return (V) stub.put(key, value);
     }
 
     @Override
-    public V remove(K key) throws RemoteException {
+    public V remove(K key) {
         return (V) stub.remove(key);
     }
 
     @Override
-    public void putAll(Map<K, V> m) throws RemoteException {
+    public void putAll(Map<K, V> m) {
         stub.putAll(m);
+    }
+
+    @Override
+    public Iterable<V> getAllValues() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

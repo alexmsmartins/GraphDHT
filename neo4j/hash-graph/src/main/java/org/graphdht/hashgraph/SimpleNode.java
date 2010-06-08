@@ -6,11 +6,8 @@
 package org.graphdht.hashgraph;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.*;
 
-import org.graphdht.dht.rmi.DHTService;
-import org.graphdht.hashcontainer.SimpleDHT;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;

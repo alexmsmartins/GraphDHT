@@ -48,7 +48,7 @@ public class SimpleHashGraphDatabaseTest {
     @Test
     public void testGettingStartedGuide() throws Exception {
         System.out.println("Start Getting Started Guide!");
-        GraphDatabaseService neo = new SimpleHashGraphDatabase("var/graphdb");
+        GraphDatabaseService neo = new SimpleHashGraphDatabase("simple");
 
         Transaction tx = neo.beginTx();
 

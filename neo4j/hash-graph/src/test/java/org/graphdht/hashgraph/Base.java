@@ -56,7 +56,7 @@ abstract class Base {
                 buffer.append((char) b);
             }
         });
-        neo = new SimpleHashGraphDatabase("database");
+        neo = new SimpleHashGraphDatabase("simple");
     }
 
     public void tearDown() {
