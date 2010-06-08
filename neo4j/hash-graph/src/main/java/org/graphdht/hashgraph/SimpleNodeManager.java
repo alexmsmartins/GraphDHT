@@ -55,7 +55,7 @@ public class SimpleNodeManager {
     }
 
     public Node getReferenceNode() {
-        return this.nodeMap.get(new Long(Long.MIN_VALUE));
+        return this.nodeMap.get(new Long(0));
     }
 
     public Iterable<Node> getAllNodes() {
@@ -123,6 +123,7 @@ public class SimpleNodeManager {
         if (otherNode != null) {
             Relationship rel = new SimpleRelationship(generateNextId(), simpleNodeId, otherNodeId, type, true, this);
             this.relationshipMap.put(rel.getId(), rel);
+            otherNode.addRelationship(rel);
             return rel;
         } else {
             throw new org.neo4j.graphdb.NotFoundException("The destiny node of this relationship does not exist in the graph");

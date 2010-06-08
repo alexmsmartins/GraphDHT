@@ -27,6 +27,8 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 
+import static org.junit.Assert.*;
+
 /**
  * A few test cases.
  * 
@@ -60,6 +62,7 @@ public class BasicTest extends Base {
         Transaction tx = neo().beginTx();
         try {
             Node start = neo().getReferenceNode();
+            assertTrue(start != null);
             Node end = neo().createNode();
             Relationship rel = start.createRelationshipTo(end,
                     TestRelations.TEST);

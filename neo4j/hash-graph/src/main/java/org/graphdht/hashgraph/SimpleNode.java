@@ -19,6 +19,7 @@ import org.neo4j.graphdb.ReturnableEvaluator;
 import org.neo4j.graphdb.StopEvaluator;
 import org.neo4j.graphdb.Traverser;
 import org.neo4j.graphdb.Traverser.Order;
+import org.neo4j.kernel.impl.traversal.InternalTraverserFactory;
 
 /**
  * @author alex
@@ -35,6 +36,8 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
      * Defines the <code>direction</code> of the <code>Relationship</code> in the same position.
      */
     List<Direction> relDirection = new ArrayList();
+
+    InternalTraverserFactory traverserFactory = new InternalTraverserFactory();
 
     public SimpleNode(long id, SimpleNodeManager service) {
         super(id, service);
@@ -83,24 +86,22 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     }
 
     public Iterable<Relationship> getRelationships(Direction dir) {
-        Collection<Relationship> c;
-        if (dir == Direction.BOTH)
-            return this.getRelationships();
-        else {
-            c = new ArrayList<Relationship>();
-            if (this.relationships.size() > 0) {
-                Iterator<Relationship> relIt = this.relationships.iterator();
-                Iterator<Direction> relDirIt = this.relDirection.iterator();
-                Direction d;
-                Relationship rel;
-                for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                    if (d == dir) {
+        Collection<Relationship> c = new ArrayList<Relationship>();
+        if (this.relationships.size() > 0) {
+            if (dir == Direction.BOTH)
+                return this.getRelationships();
+            else {
+                for (Relationship rel : relationships) {
+                    if (rel.getStartNode().equals(this) && dir == Direction.OUTGOING) {
+                        c.add(rel);
+                    } else
+                    if (rel.getEndNode().equals(this) && dir == Direction.INCOMING) {
                         c.add(rel);
                     }
                 }
             }
-            return c;
         }
+        return c;
     }
 
     public boolean hasRelationship(Direction dir) {
@@ -108,15 +109,14 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
             if (dir == Direction.BOTH)
                 return true;
             else {
-                Iterator<Relationship> relIt = this.relationships.iterator();
-                Iterator<Direction> relDirIt = this.relDirection.iterator();
-                Direction d;
-                Relationship rel;
-                for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                    if (d == dir) {
-                        return true;
+                    for (Relationship rel : relationships) {
+                        if (rel.getStartNode().equals(this) && dir == Direction.OUTGOING) {
+                            return true;
+                        } else
+                        if (rel.getEndNode().equals(this) && dir == Direction.INCOMING) {
+                            return true;
+                        }
                     }
-                }
             }
         }
         return false;
@@ -125,13 +125,17 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     public Iterable<Relationship> getRelationships(RelationshipType type, Direction dir) {
         Collection<Relationship> c = new ArrayList<Relationship>();
         if (this.relationships.size() > 0) {
-            Iterator<Relationship> relIt = this.relationships.iterator();
-            Iterator<Direction> relDirIt = this.relDirection.iterator();
-            Direction d;
-            Relationship rel;
-            for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                if ((dir == Direction.BOTH || d == dir) && rel.isType(type)) {
-                    c.add(rel);
+            if (dir == Direction.BOTH)
+                return this.getRelationships(type);
+            else {
+                for (Relationship rel : relationships) {
+                    if (rel.getType() == type) {
+                        if (rel.getStartNode().equals(this) && dir == Direction.OUTGOING) {
+                            c.add(rel);
+                        } else if (rel.getEndNode().equals(this) && dir == Direction.INCOMING) {
+                            c.add(rel);
+                        }
+                    }
                 }
             }
         }
@@ -140,13 +144,17 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
 
     public boolean hasRelationship(RelationshipType type, Direction dir) {
         if (this.relationships.size() > 0) {
-            Iterator<Relationship> relIt = this.relationships.iterator();
-            Iterator<Direction> relDirIt = this.relDirection.iterator();
-            Direction d;
-            Relationship rel;
-            for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                if ((dir == Direction.BOTH || d == dir) && rel.isType(type)) {
-                    return true;
+            if (dir == Direction.BOTH)
+                return this.hasRelationship(type);
+            else {
+                for (Relationship rel : relationships) {
+                    if (rel.getType() == type) {
+                        if (rel.getStartNode().equals(this) && dir == Direction.OUTGOING) {
+                            return true;
+                        } else if (rel.getEndNode().equals(this) && dir == Direction.INCOMING) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -155,13 +163,21 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
 
     public Relationship getSingleRelationship(RelationshipType type, Direction dir) {
         if (this.relationships.size() > 0) {
-            Iterator<Relationship> relIt = this.relationships.iterator();
-            Iterator<Direction> relDirIt = this.relDirection.iterator();
-            Direction d;
-            Relationship rel;
-            for (rel = relIt.next(), d = relDirIt.next(); relIt.hasNext();) {
-                if ((dir == Direction.BOTH || d == dir) && rel.isType(type)) {
-                    return rel;
+            if (dir == Direction.BOTH) {
+                for(Relationship rel: this.relationships) {
+                    if(rel.getType() == type){
+                        return rel;
+                    }
+                }
+            } else {
+                for (Relationship rel : relationships) {
+                    if (rel.getType() == type) {
+                        if (rel.getStartNode().equals(this) && dir == Direction.OUTGOING) {
+                            return rel;
+                        } else if (rel.getEndNode().equals(this) && dir == Direction.INCOMING) {
+                            return rel;
+                        }
+                    }
                 }
             }
         }
@@ -169,45 +185,99 @@ public class SimpleNode extends SimplePrimitive implements Node, Serializable {
     }
 
     public Relationship createRelationshipTo(Node otherNode, RelationshipType type) {
-        Relationship rel;
-        Direction currDir;
-
         //TODO this can be optimized by taking of the getRelationships(...) and doing everything in the foreach
         Iterable<Relationship> relIt = this.getRelationships(type, Direction.OUTGOING);
         //check if there are previous relationships
-        for (int i = 0; i< relationships.size(); i++) {
-            rel = this.relationships.get(i);
-            currDir = this.relDirection.get(i);
-            if (rel.getEndNode().equals(otherNode) && rel.getType() == type && currDir == Direction.OUTGOING ) {
+        for (Relationship rel : relationships) {
+            if (rel.getEndNode().equals(otherNode) && rel.getType() == type ) {
                 return rel; //returns an existing relationship instead of creating a new one
-                //TODO check if returning an existing relationship is expected behaviour
             }
         }
-
-        //create relationship
-        rel = this.dhtService.createRelationship(this.id, otherNode.getId(), type);
-        this.addRelationship(rel, Direction.OUTGOING );
-        ((SimpleNode)otherNode).addRelationship(rel, Direction.INCOMING );
+        //else create relationship
+        Relationship rel = this.dhtService.createRelationship(this.id, otherNode.getId(), type);
+        this.addRelationship(rel );
         return rel;
     }
 
-    protected Relationship addRelationship(Relationship rel, Direction dir) {
+    protected Relationship addRelationship(Relationship rel) {
         this.relationships.add(rel);
-        this.relDirection.add(dir);
         return rel;
     }
 
 
-    public Traverser traverse(Order traversalOrder, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, RelationshipType relationshipType, Direction direction) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Traverser traverse(Order traversalOrder,
+                              StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator,
+                              RelationshipType relationshipType, Direction direction) {
+        if ( direction == null )
+        {
+            throw new IllegalArgumentException( "Null direction" );
+        }
+        if ( relationshipType == null )
+        {
+            throw new IllegalArgumentException( "Null relationship type" );
+        }
+        // rest of parameters will be validated in traverser package        
+        return this.traverserFactory.createTraverser(traversalOrder, this, relationshipType, direction, stopEvaluator, returnableEvaluator);
     }
 
-    public Traverser traverse(Order traversalOrder, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, RelationshipType firstRelationshipType, Direction firstDirection, RelationshipType secondRelationshipType, Direction secondDirection) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Traverser traverse(Order traversalOrder,
+                              StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator,
+                              RelationshipType firstRelationshipType, Direction firstDirection,
+                              RelationshipType secondRelationshipType, Direction secondDirection) {
+        if ( firstDirection == null || secondDirection == null )
+        {
+            throw new IllegalArgumentException( "Null direction, "
+                + "firstDirection=" + firstDirection + "secondDirection="
+                + secondDirection );
+        }
+        if ( firstRelationshipType == null || secondRelationshipType == null )
+        {
+            throw new IllegalArgumentException( "Null rel type, " + "first="
+                + firstRelationshipType + "second=" + secondRelationshipType );
+        }
+        // rest of parameters will be validated in traverser package
+        RelationshipType[] types = new RelationshipType[2];
+        Direction[] dirs = new Direction[2];
+        types[0] = firstRelationshipType;
+        types[1] = secondRelationshipType;
+        dirs[0] = firstDirection;
+        dirs[1] = secondDirection;
+        return this.traverserFactory.createTraverser(traversalOrder, this, types, dirs, stopEvaluator, returnableEvaluator);
     }
 
-    public Traverser traverse(Order traversalOrder, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... relationshipTypesAndDirections) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Traverser traverse(Order traversalOrder,
+                              StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator,
+                              Object... relationshipTypesAndDirections) {
+        int length = relationshipTypesAndDirections.length;
+        if ( (length % 2) != 0 || length == 0 )
+        {
+            throw new IllegalArgumentException( "Variable argument should "
+                + " consist of [RelationshipType,Direction] pairs" );
+        }
+        int elements = relationshipTypesAndDirections.length / 2;
+        RelationshipType[] types = new RelationshipType[elements];
+        Direction[] dirs = new Direction[elements];
+        int j = 0;
+        for ( int i = 0; i < elements; i++ )
+        {
+            Object relType = relationshipTypesAndDirections[j++];
+            if ( !(relType instanceof RelationshipType) )
+            {
+                throw new IllegalArgumentException(
+                    "Expected RelationshipType at var args pos " + (j - 1)
+                        + ", found " + relType );
+            }
+            types[i] = (RelationshipType) relType;
+            Object direction = relationshipTypesAndDirections[j++];
+            if ( !(direction instanceof Direction) )
+            {
+                throw new IllegalArgumentException(
+                    "Expected Direction at var args pos " + (j - 1)
+                        + ", found " + direction );
+            }
+            dirs[i] = (Direction) direction;
+        }        
+        return this.traverserFactory.createTraverser(traversalOrder, this, types, dirs, stopEvaluator, returnableEvaluator);
     }
 
     protected Relationship deleteRelationship(long aLong) {

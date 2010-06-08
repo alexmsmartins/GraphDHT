@@ -9,11 +9,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.*;
 
 /**
  *
@@ -52,8 +50,7 @@ public class SimpleHashGraphDatabaseTest {
         System.out.println("Start Getting Started Guide!");
         GraphDatabaseService neo = new SimpleHashGraphDatabase("var/graphdb");
 
-        //TODO transactions for a later time
-        //Transaction tx = neo.beginTx();
+        Transaction tx = neo.beginTx();
 
         try {
             Node firstNode = neo.createNode();
@@ -69,9 +66,8 @@ public class SimpleHashGraphDatabaseTest {
             System.out.print(secondNode.getProperty("message"));
         } catch (Exception e) {
             throw e;
-            //fail("The Simple example failed with " + e.getStackTrace().toString() );
         } finally {
-            //tx.finish();
+            tx.finish();
         }
         neo.shutdown();
 

@@ -31,12 +31,10 @@ import org.neo4j.remote.transports.LocalGraphDatabase;
 
 abstract class Base {
 
-    private static final String STORE_DIR = "target/neo";
     private StringBuffer buffer;
 
     private GraphDatabaseService neo;
     private PrintStream stream;
-    private GraphDatabaseService embeddedNeo;
 
     protected GraphDatabaseService neo() {
         return neo;
@@ -51,7 +49,6 @@ abstract class Base {
     }
 
     public void setUp() {
-        deleteIfPresent(STORE_DIR);
         buffer = new StringBuffer();
         stream = new PrintStream(new OutputStream() {
             @Override
@@ -65,26 +62,6 @@ abstract class Base {
     public void tearDown() {
         neo.shutdown();
         System.out.print(buffer);
-    }
-
-    private void deleteIfPresent(String storeDir) {
-        File dir = new File(storeDir);
-        if (dir.exists()) {
-            for (File file : dir.listFiles()) {
-                file.delete();
-            }
-            dir.delete();
-        }
-    }
-
-    private void markForRemoval(String storeDir) {
-        File dir = new File(storeDir);
-        if (dir.exists()) {
-            dir.deleteOnExit();
-            for (File file : dir.listFiles()) {
-                file.deleteOnExit();
-            }
-        }
     }
 
 }

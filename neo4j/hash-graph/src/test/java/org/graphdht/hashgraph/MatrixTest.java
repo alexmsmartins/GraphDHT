@@ -53,27 +53,6 @@ import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 public class MatrixTest
 {
-    private static EmbeddedGraphDatabase backend;
-
-    private static BasicGraphDatabaseServer server;
-
-    private static IndexService nodeIndex;
-
-    @BeforeClass
-    public static void startBackend()
-    {
-        backend = new EmbeddedGraphDatabase( "target/neo" );
-        server = new LocalGraphDatabase( backend );
-        nodeIndex = new LuceneIndexService( backend );
-        server.registerIndexService( "node index", nodeIndex );
-    }
-
-    @AfterClass
-    public static void stopBackend()
-    {
-        nodeIndex.shutdown();
-        backend.shutdown();
-    }
 
     private GraphDatabaseService neo;
 
@@ -82,8 +61,7 @@ public class MatrixTest
     @Before
     public void connect()
     {
-        neo = new RemoteGraphDatabase( server );
-        index = new RemoteIndexService( neo, "node index" );
+        neo = new SimpleHashGraphDatabase( "graph.database.for.tests" );
     }
 
     @After
@@ -92,21 +70,16 @@ public class MatrixTest
         neo.shutdown();
     }
 
-    @Test
-    public void testHasIndex() throws Exception
-    {
-        Assert.assertNotNull( "No indexes could be retreived.", index );
-    }
-
     private static enum MatrixRelation implements RelationshipType
     {
         KNOWS, CODED_BY, LOVES
     }
 
-    private static void defineMatrix( GraphDatabaseService neo, IndexService index )
+    private static void defineMatrix( GraphDatabaseService neo)
         throws Exception
     {
         // Define nodes
+        System.out.println("Before defining nodes");
         Node mrAndersson, morpheus, trinity, cypher, agentSmith, theArchitect;
         mrAndersson = neo.createNode();
         morpheus = neo.createNode();
@@ -115,17 +88,26 @@ public class MatrixTest
         agentSmith = neo.createNode();
         theArchitect = neo.createNode();
         // Define relationships
-        @SuppressWarnings( "unused" )
+        //@SuppressWarnings( "unused" )
+        System.out.println("Before defining relationships");        
         Relationship aKm, aKt, mKt, mKc, cKs, sCa, tLa;
+        System.out.println("Before defining matrix");
         aKm = mrAndersson.createRelationshipTo( morpheus, MatrixRelation.KNOWS );
+        System.out.println("After mrAndersson -> morpheus");
         aKt = mrAndersson.createRelationshipTo( trinity, MatrixRelation.KNOWS );
+        System.out.println("After mrAndersson -> trinity");
         mKt = morpheus.createRelationshipTo( trinity, MatrixRelation.KNOWS );
+        System.out.println("After morpheus -> trinity");
         mKc = morpheus.createRelationshipTo( cypher, MatrixRelation.KNOWS );
+        System.out.println("After morpheus -> cypher");
         cKs = cypher.createRelationshipTo( agentSmith, MatrixRelation.KNOWS );
+        System.out.println("After cypher -> agentSmith");
         sCa = agentSmith.createRelationshipTo( theArchitect,
             MatrixRelation.CODED_BY );
+        System.out.println("After agentSmith -> theArchitect");        
         tLa = trinity.createRelationshipTo( mrAndersson, MatrixRelation.LOVES );
         // Define node properties
+        System.out.println("Before defining properties");        
         mrAndersson.setProperty( "name", "Thomas Andersson" );
         morpheus.setProperty( "name", "Morpheus" );
         trinity.setProperty( "name", "Trinity" );
@@ -133,18 +115,6 @@ public class MatrixTest
         agentSmith.setProperty( "name", "Agent Smith" );
         theArchitect.setProperty( "name", "The Architect" );
         // Define relationship properties
-        // Index nodes
-        indexNodes( index, "name", mrAndersson, morpheus, trinity, cypher,
-            agentSmith, theArchitect );
-    }
-
-    private static void indexNodes( IndexService index, String key,
-        Node... nodes )
-    {
-        for ( Node node : nodes )
-        {
-            index.index( node, key, node.getProperty( key ) );
-        }
     }
 
     private static void verifyFriendsOf( Node thomas ) throws Exception
@@ -237,29 +207,43 @@ public class MatrixTest
     @Test
     public void testTheMatrix() throws Exception
     {
-        Transaction tx = neo.beginTx();
-        verifyTransaction( "nr 1", tx, PlaceboVerifiction.REQUIRE_PROPER );
+        //Transaction tx = neo.beginTx();
+        //verifyTransaction( "nr 1", tx, PlaceboVerifiction.REQUIRE_PROPER );
         try
         {
-            defineMatrix( neo, index );
-            tx.success();
+            System.out.println("Before defining matrix");
+            defineMatrix( neo );
+            System.out.println("After defining matrix");
+            //tx.success();
         }
         finally
         {
-            tx.finish();
+            //tx.finish();
         }
-        tx = neo.beginTx();
-        verifyTransaction( "nr 2", tx, PlaceboVerifiction.REQUIRE_PROPER );
+        //tx = neo.beginTx();
+        //verifyTransaction( "nr 2", tx, PlaceboVerifiction.REQUIRE_PROPER );
         try
         {
-            verifyFriendsOf( index.getSingleNode( "name", "Thomas Andersson" ) );
-            verifyHackersInNetworkOf( index.getSingleNode( "name",
-                "Thomas Andersson" ) );
-            tx.success();
+            Node thomasAndersson = null;
+            //find Node wit "name" = "Thomas Andersson"
+            Iterable<Node> nodes =neo.getAllNodes();
+            for(Node node: nodes){
+                if(node.getProperty("name") == "Thomas Andersson"){
+                    thomasAndersson = node;
+                    break;
+                }
+            }
+
+            System.out.println("Before verifying friends");
+            verifyFriendsOf( thomasAndersson );
+            System.out.println("Before verifying hackers");
+            verifyHackersInNetworkOf( thomasAndersson );
+            System.out.println("After verifying hackers");
+            //tx.success();
         }
         finally
         {
-            tx.finish();
+            //tx.finish();
         }
     }
 }

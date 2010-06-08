@@ -16,7 +16,7 @@ public class SimpleHashGraphDatabase implements GraphDatabaseService {
 
     SimpleNodeManager nodeManager;
 
-    public SimpleHashGraphDatabase(String string ) {
+    public  SimpleHashGraphDatabase(String string ) {
         nodeManager = new SimpleNodeManager();
     }
 
