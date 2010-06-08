@@ -56,7 +56,6 @@ import de.uniba.wiai.lspi.chord.service.Key;
 import de.uniba.wiai.lspi.chord.service.Report;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import de.uniba.wiai.lspi.util.logging.Logger;
-import org.graphdht.openchord.GraphDHTSecurityManager;
 
 /**
  * Implements all operations which can be invoked on the local node.
