@@ -27,6 +27,7 @@ public class DHTKey implements Key, Serializable {
 
     @Override
     public byte[] getBytes() {
+        //TODO: Future improvements...
         return key.toString().getBytes();
     }
 }

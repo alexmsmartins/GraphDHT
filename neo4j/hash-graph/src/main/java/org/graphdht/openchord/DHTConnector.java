@@ -66,7 +66,8 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
         try {
             return (V) stub.get(key);
         } catch (RemoteException rmex) {
-            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            System.out.println("failed to get: " + key);
+            rmex.printStackTrace();
             return null;
         }
     }
@@ -76,7 +77,8 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
         try {
             return (V) stub.put(key, value);
         } catch (RemoteException rmex) {
-            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            System.out.println("failed to put: " + key + " : " + value);
+            rmex.printStackTrace();
             return null;
         }
     }
@@ -86,7 +88,8 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
         try {
             return (V) stub.remove(key);
         } catch (RemoteException rmex) {
-            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            System.out.println("failed to remove: " + key);
+            rmex.printStackTrace();
             return null;
         }
     }
@@ -96,7 +99,8 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
         try {
             stub.putAll(m);
         } catch (RemoteException rmex) {
-            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            System.out.println("failed to putAll");
+            rmex.printStackTrace();
         }
     }
 
@@ -105,7 +109,8 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
         try {
             return stub.getAllValues();
         } catch (RemoteException rmex) {
-            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            System.out.println("failed to getAllValues");
+            rmex.printStackTrace();
             return null;
         }
     }

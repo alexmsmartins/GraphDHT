@@ -71,7 +71,6 @@ public class Benchmark {
             System.out.print(" " + testIdentifier);
         }
         System.out.println();
-        System.exit(0);
         double totalScore = 0;
         for (String testIdentifier : testIdentifiers) {
             totalScore += new TestRunner(settings, testIdentifier).Run();
