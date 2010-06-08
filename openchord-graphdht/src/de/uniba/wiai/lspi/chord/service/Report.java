@@ -13,7 +13,6 @@
  *                                                                         *
  *                                                                         *
  ***************************************************************************/
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,44 +35,44 @@ package de.uniba.wiai.lspi.chord.service;
  */
 public interface Report {
 
-	/**
-	 * Returns a formatted String containing all entries stored on this node.
-	 * 
-	 * @return Formatted String containing all entries stored on this node.
-	 */
-	public abstract String printEntries();
+    /**
+     * Returns a formatted String containing all entries stored on this node.
+     *
+     * @return Formatted String containing all entries stored on this node.
+     */
+    public abstract String printEntries();
 
-	/**
-	 * Returns a formatted String containing all references stored in the finger
-	 * table of this node.
-	 * 
-	 * @return Formatted String containing all references stored in the finger
-	 *         table of this node.
-	 */
-	public abstract String printFingerTable();
+    /**
+     * Returns a formatted String containing all references stored in the finger
+     * table of this node.
+     *
+     * @return Formatted String containing all references stored in the finger
+     *         table of this node.
+     */
+    public abstract String printFingerTable();
 
-	/**
-	 * Returns a formatted String containing all references stored in the
-	 * successor list of this node.
-	 * 
-	 * @return Formatted String containing all references stored in the
-	 *         successor list of this node.
-	 */
-	public abstract String printSuccessorList();
+    /**
+     * Returns a formatted String containing all references stored in the
+     * successor list of this node.
+     *
+     * @return Formatted String containing all references stored in the
+     *         successor list of this node.
+     */
+    public abstract String printSuccessorList();
 
-	/**
-	 * Returns a formatted String containing all references stored on this node.
-	 * 
-	 * @return Formatted String containing all references stored on this node.
-	 */
-	public abstract String printReferences();
+    /**
+     * Returns a formatted String containing all references stored on this node.
+     *
+     * @return Formatted String containing all references stored on this node.
+     */
+    public abstract String printReferences();
 
-	/**
-	 * Returns a formatted String containing the predecessor reference of this
-	 * node.
-	 * 
-	 * @return Formatted String containing the predecessor reference of this
-	 *         node.
-	 */
-	public abstract String printPredecessor();
+    /**
+     * Returns a formatted String containing the predecessor reference of this
+     * node.
+     *
+     * @return Formatted String containing the predecessor reference of this
+     *         node.
+     */
+    public abstract String printPredecessor();
 }
