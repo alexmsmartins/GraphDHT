@@ -7,10 +7,7 @@ package org.graphdht.hashgraph;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.graphdht.dht.rmi.DHTService;
@@ -27,46 +24,75 @@ import javax.transaction.TransactionManager;
  */
 public class SimpleNodeManager {
 
-    //FIXME Lets try to write the code here directly but later we have to change it
-    SimpleDHT<Node> nodeMap;
-    SimpleDHT<Relationship> relationshipMap;
+
+    SimpleDHT<PropertyContainer> nodeAndRelMap;
+    //SimpleDHT<Node> nodeMap;
+    //SimpleDHT<Relationship> relationshipMap;
 
     SimpleNodeManager() {
-        nodeMap = new SimpleDHT<Node>();
-        relationshipMap = new SimpleDHT<Relationship>();
+        nodeAndRelMap = new SimpleDHT<PropertyContainer>();
+        //nodeMap = new SimpleDHT<Node>();
+        //relationshipMap = new SimpleDHT<Relationship>();
         //create reference node
         Node referenceNode = new SimpleNode(0L, this);
-        nodeMap.put(referenceNode.getId(), referenceNode );
+        //nodeMap.put(referenceNode.getId(), referenceNode );
+        nodeAndRelMap.put(referenceNode.getId(), referenceNode );
     }
 
     public Node createNode() {
         Node node = null;
         node = new SimpleNode(generateNextId(), this);
-        this.nodeMap.put(node.getId(), node);
+        //this.nodeMap.put(node.getId(), node);
+        this.nodeAndRelMap.put(node.getId(), node);
         return node;
     }
 
     public Node getNodeById(long id) {
-        return this.nodeMap.get(id);
+        //return this.nodeMap.get(id);
+        return (Node)this.nodeAndRelMap.get(id);
     }
 
     public Relationship getRelationshipById(long id) {
-        return this.relationshipMap.get(id);
+        //return this.relationshipMap.get(id);
+        return (Relationship)this.nodeAndRelMap.get(id);
     }
 
     public Node getReferenceNode() {
-        return this.nodeMap.get(new Long(0));
+        //return this.nodeMap.get(new Long(0));
+        return (Node)this.nodeAndRelMap.get(new Long(0));
     }
 
+    /**
+     * Lists all the nodes that belong to the graph.
+     * This method should be avoided at all costs since it may cause OutOfMemoryError
+     * @return
+     */
     public Iterable<Node> getAllNodes() {
-        return this.nodeMap.getAllValues();
+        //return this.nodeMap.getAllValues();
+        Collection<Node> nodes = new ArrayList<Node>();
+        for(PropertyContainer node: this.nodeAndRelMap.getAllValues()){
+
+            if( node.getClass().equals(SimpleNode.class) ){
+                nodes.add( (Node)node);
+            }
+        }
+        return nodes;
     }
 
     public Iterable<RelationshipType> getRelationshipTypes() {
-        Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
+        /*Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
         for (Relationship e : this.relationshipMap.getAllValues()) {
             if (!m.containsKey(e.getType())) {
                 m.put(e.getType(), 0);
+            }
+        }
+        return m.keySet();*/
+        Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
+        for (PropertyContainer e : this.nodeAndRelMap.getAllValues()) {
+            if( e.getClass() == Relationship.class ){
+                if (!m.containsKey(((Relationship)e).getType())) {
+                    m.put( ((Relationship)e).getType(), 0);
+                }
             }
         }
         return m.keySet();
@@ -78,7 +104,7 @@ public class SimpleNodeManager {
     }
 
 
-    //these methods should not be implemented for remote DBs
+    //methods that should not be implemented for remote DBs
 
     public boolean enableRemoteShell() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -92,6 +118,8 @@ public class SimpleNodeManager {
         System.out.println("Stub transaction started!!");
         return new PlaceboTransaction(null);
     }
+
+    //methods that should not be implemented for remote DBs
 
     //private methods that need to be changed or put alsewhere
     //-1 is used by Neo4J Embedded to represent an id of something that does not exist
@@ -109,20 +137,24 @@ public class SimpleNodeManager {
     }
 
     public void deleteRelationship(Long aLong) {
-        //TODO check if isolated nodes should also be deleted
-        Relationship rel = this.relationshipMap.get(aLong);
+        //isolated nodes should also be deleted
+        //Relationship rel = this.relationshipMap.get(aLong);
+        Relationship rel = (Relationship)this.nodeAndRelMap.get(aLong);
         SimpleNode startNode = (SimpleNode) this.getNodeById(rel.getStartNode().getId());
         SimpleNode endNode = (SimpleNode) this.getNodeById(rel.getEndNode().getId());
         startNode.deleteRelationship(aLong);
         endNode.deleteRelationship(aLong);
-        this.relationshipMap.remove(aLong);
+        //this.relationshipMap.remove(aLong);
+        this.nodeAndRelMap.remove(aLong);
     }
 
     public Relationship createRelationship(long simpleNodeId, long otherNodeId, RelationshipType type) {
-        SimpleNode otherNode = (SimpleNode)this.nodeMap.get(otherNodeId);
+        //SimpleNode otherNode = (SimpleNode)this.nodeMap.get(otherNodeId);
+        SimpleNode otherNode = (SimpleNode)this.nodeAndRelMap.get(otherNodeId);
         if (otherNode != null) {
             Relationship rel = new SimpleRelationship(generateNextId(), simpleNodeId, otherNodeId, type, true, this);
-            this.relationshipMap.put(rel.getId(), rel);
+            //this.relationshipMap.put(rel.getId(), rel);
+            this.nodeAndRelMap.put(rel.getId(), rel);
             otherNode.addRelationship(rel);
             return rel;
         } else {
@@ -131,7 +163,9 @@ public class SimpleNodeManager {
     }
 
     public Node deleteNode(Long aLong) {
-        return this.nodeMap.remove(aLong);
+        //return this.nodeMap.remove(aLong);
+        Node node = (Node)this.nodeAndRelMap.get(aLong); //confirms if this is really a node
+        return (Node)this.nodeAndRelMap.remove(aLong);
     }
 
     /**

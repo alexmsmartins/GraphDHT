@@ -5,6 +5,7 @@
 
 package org.graphdht.hashgraph;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 import org.neo4j.graphdb.PropertyContainer;
@@ -13,7 +14,7 @@ import org.neo4j.graphdb.PropertyContainer;
  *
  * @author alex
  */
-public class SimplePropertyContainer implements PropertyContainer {
+public class SimplePropertyContainer implements PropertyContainer, Serializable {
     Map<String, Object>  properties;
 
     SimplePropertyContainer(){

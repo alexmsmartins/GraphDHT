@@ -2,6 +2,8 @@ package org.graphdht.hashgraph;
 
 import org.graphdht.dht.rmi.DHTService;
 
+import java.io.Serializable;
+
 /**
  * Contains functionality that is common to both node and relationship. This includes methods
  * to handle Id related functionality
@@ -10,7 +12,7 @@ import org.graphdht.dht.rmi.DHTService;
  * Time: 1:10:44
  * To change this template use File | Settings | File Templates.
  */
-public class SimplePrimitive extends SimplePropertyContainer {
+public class SimplePrimitive extends SimplePropertyContainer implements Serializable{
     protected long id;
 
     SimpleNodeManager dhtService;
