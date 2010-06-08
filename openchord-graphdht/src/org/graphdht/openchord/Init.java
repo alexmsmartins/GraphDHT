@@ -47,7 +47,7 @@ public class Init {
 
         boolean joint = false;
         int att = 0;
-        ChordWrapper chord = new ChordWrapper();
+        DHTChord chord = new DHTChord();
         do {
             try {
                 chord.create(localURL);
@@ -55,10 +55,7 @@ public class Init {
                 joint = true;
             } catch (ServiceException e) {
                 if (chord != null) {
-                    try {
-                        chord.leave();
-                    } catch (ServiceException ex) {
-                    }
+                    chord.leave();
                 }
             }
 

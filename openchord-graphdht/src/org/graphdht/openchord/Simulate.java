@@ -43,9 +43,9 @@ public class Simulate {
         } catch (MalformedURLException ex) {
             throw new RuntimeException("Could not create DHT!", ex);
         }
-        ChordWrapper chord = null;
+        DHTChord chord = null;
         try {
-            chord = new ChordWrapper();
+            chord = new DHTChord();
             chord.create(rootURL);
             System.out.println("Chord Started at " + rootURL);
         } catch (ServiceException e) {
@@ -61,7 +61,7 @@ public class Simulate {
                 throw new RuntimeException("Could not create DHT!", ex);
             }
             try {
-                ChordWrapper cnode = new ChordWrapper();
+                DHTChord cnode = new DHTChord();
                 cnode.join(nodesURL, rootURL);
                 System.out.println("Chord Started at " + nodesURL);
             } catch (ServiceException e) {

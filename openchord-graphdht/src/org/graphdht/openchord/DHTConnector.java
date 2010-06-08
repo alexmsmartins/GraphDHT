@@ -13,14 +13,16 @@ package org.graphdht.openchord;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Map;
+import org.graphdht.dht.HTService;
+import org.graphdht.dht.RMIHTService;
 
 /**
  *
  * @author nuno
  */
-public class DHTConnector<K extends Serializable, V extends Serializable> implements DHTService<K, V> {
+public class DHTConnector<K extends Serializable, V extends Serializable> implements HTService<K, V> {
 
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) {
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
         dc.connect();
         String key = "10000";
@@ -36,7 +38,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
      * 
      */
     private final String host;
-    private DHTService stub;
+    private RMIHTService stub;
     private final String name;
 
     public DHTConnector(String host, int port) {
@@ -47,7 +49,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
 
     public boolean connect() {
         try {
-            stub = (DHTService) RMIManager.findRemoteObject(host, name);
+            stub = (RMIHTService) RMIManager.findRemoteObject(host, name);
             System.out.println("stub = " + stub);
             return true;
         } catch (Exception e) {
@@ -60,22 +62,51 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
     }
 
     @Override
-    public V get(K key) throws RemoteException {
-        return (V) stub.get(key);
+    public V get(K key) {
+        try {
+            return (V) stub.get(key);
+        } catch (RemoteException rmex) {
+            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            return null;
+        }
     }
 
     @Override
-    public V put(K key, V value) throws RemoteException {
-        return (V) stub.put(key, value);
+    public V put(K key, V value) {
+        try {
+            return (V) stub.put(key, value);
+        } catch (RemoteException rmex) {
+            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            return null;
+        }
     }
 
     @Override
-    public V remove(K key) throws RemoteException {
-        return (V) stub.remove(key);
+    public V remove(K key) {
+        try {
+            return (V) stub.remove(key);
+        } catch (RemoteException rmex) {
+            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            return null;
+        }
     }
 
     @Override
-    public void putAll(Map<K, V> m) throws RemoteException {
-        stub.putAll(m);
+    public void putAll(Map<K, V> m) {
+        try {
+            stub.putAll(m);
+        } catch (RemoteException rmex) {
+            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+        }
+    }
+
+    @Override
+    public Iterable<V> getAllValues() {
+        try {
+            return stub.getAllValues();
+        } catch (RemoteException rmex) {
+            System.out.println("//TODO: HANDLE REMOTE EXCEPTIONS...");
+            return null;
+        }
     }
 }

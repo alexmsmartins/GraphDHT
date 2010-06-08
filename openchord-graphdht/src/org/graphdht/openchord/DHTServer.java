@@ -10,12 +10,12 @@
  **********************************************************/
 package org.graphdht.openchord;
 
-import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import org.graphdht.dht.RMIHTService;
 import static org.graphdht.openchord.DHTConstants.*;
 
 /**
@@ -27,12 +27,12 @@ import static org.graphdht.openchord.DHTConstants.*;
  * @param <V>
  * @author nmsa@dei.uc.pt
  */
-public class DHTServer<K extends Serializable, V extends Serializable> extends UnicastRemoteObject implements DHTService<K, V> {
+public class DHTServer<K extends Serializable, V extends Serializable> extends UnicastRemoteObject implements RMIHTService<K, V> {
 
-    private final ChordWrapper chord;
+    private final DHTChord chord;
     private final String name;
 
-    public DHTServer(ChordWrapper chord) throws RemoteException {
+    public DHTServer(DHTChord chord) throws RemoteException {
         super();
         this.chord = chord;
         this.name = GDHT_RMI_BASENAME + (chord.getURL().getPort() > 0 ? chord.getURL().getPort() : GDHT_OPENCHORD_I_PORT);
@@ -70,5 +70,10 @@ public class DHTServer<K extends Serializable, V extends Serializable> extends U
             map.put(new DHTKey(key), values.get(key));
         }
         chord.putAll(map);
+    }
+
+    @Override
+    public Iterable<V> getAllValues() throws RemoteException {
+        return null;
     }
 }

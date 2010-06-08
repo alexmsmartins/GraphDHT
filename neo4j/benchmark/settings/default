@@ -19,4 +19,10 @@
 
 TestExample.objects = 1000,10000
 TestExample.run = yes
+TestExample2.objects = 2000,20000
+TestExample2.run = yes
+TestExample3.objects = 5000,50000
+TestExample3.run = yes
+TestExample4.objects = 10000,100000
+TestExample4.run = yes
 reporters = TextReporter

@@ -19,10 +19,9 @@ import de.uniba.wiai.lspi.chord.service.Chord;
 import de.uniba.wiai.lspi.chord.service.Report;
 import de.uniba.wiai.lspi.chord.com.CommunicationException;
 import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.graphdht.dht.HTService;
 
 /**
  * Implements all operations which can be invoked on the local node.
@@ -36,18 +35,20 @@ import java.util.Set;
  * @author Karsten Loesing
  * @version 1.0.5
  */
-public class DHTChord extends ChordImpl implements DHTService<DHTKey, Serializable> {
+public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializable> {
 
-    public ChordWrapper() {
+    public DHTChord() {
         super();
     }
 
     // <editor-fold defaultstate="collapsed" desc="DHTService<Key, Serializable>">
     @Override
-    public Serializable get(DHTKey key) throws RemoteException {
+    public Serializable get(DHTKey key) {
         // check parameters
         if (key == null) {
-            NullPointerException e = new NullPointerException("Key must not have value null!");
+            NullPointerException e = new NullPointerException(
+                    "Key must not have value null!");
+            this.logger.error("Null pointer", e);
             throw e;
         }
 
@@ -60,9 +61,7 @@ public class DHTChord extends ChordImpl implements DHTService<DHTKey, Serializab
         while (!retrieved) {
             // find successor of id
             Node responsibleNode = null;
-
             responsibleNode = findSuccessor(id);
-
             // invoke retrieveEntry method
             try {
                 result = responsibleNode.retrieveEntries(id);
@@ -70,44 +69,31 @@ public class DHTChord extends ChordImpl implements DHTService<DHTKey, Serializab
 
                 retrieved = true;
             } catch (CommunicationException e1) {
-                if (debug) {
-                    this.logger.debug(
-                            "An error occured while invoking the retrieveEntry method "
-                            + " on the appropriate node! Retrieve operation "
-                            + "failed!", e1);
-                }
+                e1.printStackTrace();
                 continue;
             }
         }
-        Set<Serializable> values = new HashSet<Serializable>();
 
-        if (result != null) {
-            for (Entry entry : result) {
-                values.add(entry.getValue());
-            }
+        for (Entry entry : result) {
+            return entry.getValue();
         }
 
-        this.logger.debug("Entries were retrieved!");
-
-        return values;
+        return null;
     }
 
     @Override
-    public Serializable put(DHTKey key, Serializable value) throws RemoteException {
+    public Serializable put(DHTKey key, Serializable value) {
         // check parameters
-        if (key == null || s == null) {
+        if (key == null || value == null) {
             throw new NullPointerException(
                     "Neither parameter may have value null!");
         }
 
+        Serializable oldValue = null;
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
-        Entry entryToInsert = new Entry(id, s);
+        Entry entryToInsert = new Entry(id, value);
 
-        boolean debug = this.logger.isEnabledFor(DEBUG);
-        if (debug) {
-            this.logger.debug("Inserting new entry with id " + id);
-        }
         boolean inserted = false;
         while (!inserted) {
             // find successor of id
@@ -115,78 +101,70 @@ public class DHTChord extends ChordImpl implements DHTService<DHTKey, Serializab
             // try {
             responsibleNode = this.findSuccessor(id);
 
-            if (debug) {
-                this.logger.debug("Invoking insertEntry method on node "
-                        + responsibleNode.getNodeID());
-            }
-
             // invoke insertEntry method
             try {
+                Set<Entry> entries = responsibleNode.retrieveEntries(id);
+                while (!entries.isEmpty()) {
+                    Entry t = entries.iterator().next();
+                    if (t != null) {
+                        oldValue = t.getValue();
+                        entries.remove(t);
+                    }
+                }
                 responsibleNode.insertEntry(entryToInsert);
                 inserted = true;
             } catch (CommunicationException e1) {
-                if (debug) {
-                    this.logger.debug(
-                            "An error occured while invoking the insertEntry method "
-                            + " on the appropriate node! Insert operation "
-                            + "failed!", e1);
-                }
                 continue;
             }
         }
-        this.logger.debug("New entry was inserted!");
+        return oldValue;
     }
 
     @Override
-    public Serializable remove(DHTKey key) throws RemoteException {
-
+    public Serializable remove(DHTKey key) {
         // check parameters
-        if (key == null || s == null) {
-            throw new NullPointerException(
-                    "Neither parameter may have value null!");
+        if (key == null) {
+            throw new NullPointerException("The parameter cannot have value null!");
         }
 
+        Serializable oldValue = null;
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
-        Entry entryToRemove = new Entry(id, s);
 
-        boolean removed = false;
-        while (!removed) {
-
-            boolean debug = this.logger.isEnabledFor(DEBUG);
-            if (debug) {
-                this.logger.debug("Removing entry with id " + id
-                        + " and value " + s);
-            }
-
+        boolean inserted = false;
+        while (!inserted) {
             // find successor of id
             Node responsibleNode;
-            responsibleNode = super.findSuccessor(id);
+            // try {
+            responsibleNode = this.findSuccessor(id);
 
-            if (debug) {
-                this.logger.debug("Invoking removeEntry method on node "
-                        + responsibleNode.getNodeID());
-            }
-            // invoke removeEntry method
+            // invoke insertEntry method
             try {
-                responsibleNode.removeEntry(entryToRemove);
-                removed = true;
-            } catch (CommunicationException e1) {
-                if (debug) {
-                    this.logger.debug(
-                            "An error occured while invoking the removeEntry method "
-                            + " on the appropriate node! Remove operation "
-                            + "failed!", e1);
+                Set<Entry> entries = responsibleNode.retrieveEntries(id);
+                while (!entries.isEmpty()) {
+                    Entry t = entries.iterator().next();
+                    if (t != null) {
+                        oldValue = t.getValue();
+                        entries.remove(t);
+                    }
                 }
+            } catch (CommunicationException e1) {
                 continue;
             }
         }
-        this.logger.debug("Entry was removed!");
+        return oldValue;
     }
 
     @Override
-    public void putAll(Map<DHTKey, Serializable> m) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void putAll(Map<DHTKey, Serializable> m) {
+        for (DHTKey key : m.keySet()) {
+            put(key, m.get(key));
+        }
+    }
+
+    @Override
+    public Iterable<Serializable> getAllValues() {
+        return null;
     }
     // </editor-fold>
 }

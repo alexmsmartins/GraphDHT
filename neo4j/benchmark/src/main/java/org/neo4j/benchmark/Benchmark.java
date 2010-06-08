@@ -29,6 +29,8 @@ import org.neo4j.benchmark.tests.TestExample;
 
 /**
  * Main class for running the benchmarking framework.
+ *
+ * 
  * @author Patrik
  */
 public class Benchmark {
@@ -50,11 +52,8 @@ public class Benchmark {
             System.err.println("Aborting");
             return;
         }
-        // This is pure debug
-        for (Object settingName : settings.keySet()) {
-            System.out.println((String) settingName);
-            System.out.println(settings.get(settingName));
-        }
+
+
         // Any setting X.run will be assumed to be a test identifier.
         List<String> testIdentifiers = new LinkedList<String>();
         for (Object settingName : settings.keySet()) {
@@ -67,11 +66,12 @@ public class Benchmark {
                 testIdentifiers.add(settingPrefix);
             }
         }
-        System.out.print("Will run the following tests:");
+        System.out.print("Will run the following tests: \n --");
         for (String testIdentifier : testIdentifiers) {
             System.out.print(" " + testIdentifier);
         }
         System.out.println();
+        System.exit(0);
         double totalScore = 0;
         for (String testIdentifier : testIdentifiers) {
             totalScore += new TestRunner(settings, testIdentifier).Run();

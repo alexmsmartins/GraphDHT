@@ -8,10 +8,8 @@
  * Pedro Alexandre Mesquita Santos Martins - pamm@dei.uc.pt
  * Nuno Manuel dos Santos Antunes - nmsa@dei.uc.pt
  **********************************************************/
-package org.graphdht.openchord;
+package org.graphdht.dht;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
@@ -22,7 +20,7 @@ import java.util.Map;
  * @author pamm@dei.uc.pt
  * @author nmsa@dei.uc.pt
  */
-public interface DHTService<K, V> extends Remote {
+public interface HTService<K, V> {
 
     /**
      * Returns the value to which the specified key is mapped,
@@ -47,7 +45,7 @@ public interface DHTService<K, V> extends Remote {
      * @throws NullPointerException if the specified key is null and this map
      *         does not permit null keys (optional)
      */
-    public V get(K key) throws RemoteException;
+    public V get(K key);
 
     /**
      * Associates the specified value with the specified key in this map
@@ -73,7 +71,7 @@ public interface DHTService<K, V> extends Remote {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public V put(K key, V value) throws RemoteException;
+    public V put(K key, V value);
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -103,7 +101,7 @@ public interface DHTService<K, V> extends Remote {
      * @throws NullPointerException if the specified key is null and this
      *         map does not permit null keys (optional)
      */
-    public V remove(K key) throws RemoteException;
+    public V remove(K key);
 
     /**
      * Copies all of the mappings from the specified map to this map
@@ -124,5 +122,7 @@ public interface DHTService<K, V> extends Remote {
      * @throws IllegalArgumentException if some property of a key or value in
      *         the specified map prevents it from being stored in this map
      */
-    void putAll(Map<K, V> m) throws RemoteException;
+    public void putAll(Map<K, V> m);
+
+    public Iterable<V> getAllValues();
 }

@@ -64,7 +64,7 @@ public class Join {
 
         boolean joint = false;
         int att = 0;
-        ChordWrapper chord = new ChordWrapper();
+        DHTChord chord = new DHTChord();
         do {
             try {
                 chord.join(localURL, bootstrapURL);
@@ -72,10 +72,7 @@ public class Join {
                 joint = true;
             } catch (ServiceException e) {
                 if (chord != null) {
-                    try {
-                        chord.leave();
-                    } catch (ServiceException ex) {
-                    }
+                    chord.leave();
                 }
             }
 

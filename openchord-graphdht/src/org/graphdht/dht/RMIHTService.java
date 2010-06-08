@@ -10,17 +10,19 @@
  **********************************************************/
 package org.graphdht.dht;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 /**
  * RMI Interface to be used to preform DHT operations
  *
  * TODO: Review the javadoc
- *
+ * 
  * @author pamm@dei.uc.pt
  * @author nmsa@dei.uc.pt
  */
-public interface HTService<K, V> {
+public interface RMIHTService<K, V> extends Remote {
 
     /**
      * Returns the value to which the specified key is mapped,
@@ -45,7 +47,7 @@ public interface HTService<K, V> {
      * @throws NullPointerException if the specified key is null and this map
      *         does not permit null keys (optional)
      */
-    public V get(K key);
+    public V get(K key) throws RemoteException;
 
     /**
      * Associates the specified value with the specified key in this map
@@ -71,7 +73,7 @@ public interface HTService<K, V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public V put(K key, V value);
+    public V put(K key, V value) throws RemoteException;
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -101,7 +103,7 @@ public interface HTService<K, V> {
      * @throws NullPointerException if the specified key is null and this
      *         map does not permit null keys (optional)
      */
-    public V remove(K key);
+    public V remove(K key) throws RemoteException;
 
     /**
      * Copies all of the mappings from the specified map to this map
@@ -122,7 +124,7 @@ public interface HTService<K, V> {
      * @throws IllegalArgumentException if some property of a key or value in
      *         the specified map prevents it from being stored in this map
      */
-    public void putAll(Map<K, V> m);
+    public void putAll(Map<K, V> m) throws RemoteException;
 
-    public Iterable<V> getAllValues();
+    public Iterable<V> getAllValues() throws RemoteException;
 }

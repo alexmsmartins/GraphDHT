@@ -150,7 +150,7 @@ public class ChordImpl implements Chord, Report, AsynChord {
     /**
      * Reference on hash function (singleton instance).
      */
-    private HashFunction hashFunction;
+    protected HashFunction hashFunction;
     /**
      * This node's URL.
      */
@@ -813,7 +813,7 @@ public class ChordImpl implements Chord, Report, AsynChord {
      *             If given ID is <code>null</code>.
      * @return Responsible node.
      */
-    final Node findSuccessor(ID key) {
+    public Node findSuccessor(ID key) {
 
         if (key == null) {
             NullPointerException e = new NullPointerException(
