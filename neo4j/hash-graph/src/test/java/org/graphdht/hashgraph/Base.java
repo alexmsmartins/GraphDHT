@@ -19,20 +19,15 @@
  */
 package org.graphdht.hashgraph;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
-import org.neo4j.remote.RemoteGraphDatabase;
-import org.neo4j.remote.transports.LocalGraphDatabase;
 
 abstract class Base {
 
     private StringBuffer buffer;
-
     private GraphDatabaseService neo;
     private PrintStream stream;
 
@@ -51,6 +46,7 @@ abstract class Base {
     public void setUp() {
         buffer = new StringBuffer();
         stream = new PrintStream(new OutputStream() {
+
             @Override
             public void write(int b) throws IOException {
                 buffer.append((char) b);
@@ -63,5 +59,4 @@ abstract class Base {
         neo.shutdown();
         System.out.print(buffer);
     }
-
 }

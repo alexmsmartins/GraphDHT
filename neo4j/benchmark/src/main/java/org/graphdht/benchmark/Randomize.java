@@ -59,7 +59,7 @@ public class Randomize {
                     if (rando < probability(i, popular[i], popular[j], connected[j], i - j)) {
                         connected[i]++;
                         connected[j]++;
-                        buffer.append(" ").append(j).append(" -- ").append(i).append("\n");
+                        buffer.append(" ").append(j).append(" -- ").append(i).append(";\n");
                     }
                 }
                 if (buffer.length() > BUFFER_SIZE) {

@@ -206,7 +206,7 @@ public class RichGetRicher {
         public String toDotLanguage() {
             StringBuilder sb = new StringBuilder();
             for (Long rel : relations) {
-                sb.append("  ").append(this.id).append(" -- ").append(rel.intValue()).append("\n");
+                sb.append("  ").append(this.id).append(" -- ").append(rel.intValue()).append(";\n");
             }
             return sb.toString();
         }

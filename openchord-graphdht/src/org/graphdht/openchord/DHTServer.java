@@ -10,12 +10,15 @@
  **********************************************************/
 package org.graphdht.openchord;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import org.graphdht.dht.RMIHTService;
+import org.graphdht.dht.HTService;
 import static org.graphdht.openchord.DHTConstants.*;
 
 /**
@@ -27,44 +30,127 @@ import static org.graphdht.openchord.DHTConstants.*;
  * @param <V>
  * @author nmsa@dei.uc.pt
  */
-public class DHTServer<K extends Serializable, V extends Serializable> extends UnicastRemoteObject implements RMIHTService<K, V> {
+public class DHTServer<K extends Serializable, V extends Serializable> implements HTService<K, V> {
 
     private final DHTChord chord;
-    private final String name;
+    private final int port;
 
-    public DHTServer(DHTChord chord) throws RemoteException {
+    public DHTServer(DHTChord chord) {
         super();
         this.chord = chord;
-        this.name = GDHT_RMI_BASENAME + (chord.getURL().getPort() > 0 ? chord.getURL().getPort() : GDHT_OPENCHORD_I_PORT);
-        System.out.println(name);
+        this.port = GDHT_OPENCHORD_SERVER_ADD + (chord.getURL().getPort() > 0 ? chord.getURL().getPort() : GDHT_OPENCHORD_I_PORT);
     }
 
-    public void start() {
-        boolean binded = RMIManager.bindRemoteObject(name, this);
-        if (binded) {
-            System.out.println("RMI : GraphDHT node UP!");
-        } else {
-            System.out.println("RMI: Failure setting node UP!");
+    public void start() throws IOException {
+        ServerSocket s = new ServerSocket(port);
+        System.out.println("Listening at: " + port);
+        while (true) {
+            new ListeningThread(s.accept());
+        }
+    }
+
+    public class ListeningThread extends Thread {
+
+        private final Socket socket;
+
+        private ListeningThread(Socket socket) {
+            this.socket = socket;
+            this.start();
+        }
+
+        @Override
+        public void run() {
+            ObjectInputStream is;
+            ObjectOutputStream os;
+            try {
+                os = new ObjectOutputStream(socket.getOutputStream());
+                is = new ObjectInputStream(socket.getInputStream());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return;
+            }
+
+            while (true) {
+                Message message = null;
+                try {
+                    message = (Message) is.readObject();
+                } catch (IOException ex) {
+                    try {
+                        socket.close();
+                    } catch (IOException ex1) {
+                        System.out.println("cannot close socket: " + ex1);
+                    }
+                    return;
+                } catch (ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+                if (message == null) {
+                    System.out.println(socket.getPort() + " message == null");
+                    System.out.println(socket.getPort() + " in " + socket.isInputShutdown());
+                    System.out.println(socket.getPort() + " out " + socket.isOutputShutdown());
+                    System.out.println(socket.getPort() + " message == null");
+                    if (socket.isClosed()) {
+                        System.out.println(socket.getPort() + " CLOSED...");
+                    }
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    System.out.println("Received: " + message);
+                    Object response = null;
+                    switch (message.type) {
+                        case GET:
+                            response = get((K) message.obj);
+                            ;
+                            break;
+                        case PUT:
+                            Object[] objects = (Object[]) message.obj;
+                            response = put((K) objects[0], (V) objects[1]);
+                            break;
+                        case REMOVE:
+                            response = remove((K) message.obj);
+                            ;
+                            break;
+                        case PUTALL:
+                            putAll((Map<K, V>) message.obj);
+                            break;
+                        case GETALL:
+                            response = getAllValues();
+                            break;
+
+                    }
+                    try {
+                        os.writeObject(response);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    System.out.println("Responded: " + response);
+                }
+
+            }
+
         }
     }
 
     @Override
-    public V get(K key) throws RemoteException {
+    public V get(K key) {
         return (V) chord.get(new DHTKey(key)); // HERE
     }
 
     @Override
-    public V put(K key, V value) throws RemoteException {
+    public V put(K key, V value) {
         return (V) chord.put(new DHTKey(key), value);
     }
 
     @Override
-    public V remove(K key) throws RemoteException {
+    public V remove(K key) {
         return (V) chord.remove(new DHTKey(key));
     }
 
     @Override
-    public void putAll(Map<K, V> values) throws RemoteException {
+    public void putAll(Map<K, V> values) {
         Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
         for (K key : values.keySet()) {
             map.put(new DHTKey(key), values.get(key));
@@ -73,7 +159,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> extends U
     }
 
     @Override
-    public Iterable<V> getAllValues() throws RemoteException {
+    public Iterable<V> getAllValues() {
         return null;
     }
 }

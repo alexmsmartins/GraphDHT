@@ -10,23 +10,30 @@
  **********************************************************/
 package org.graphdht.openchord;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.rmi.RemoteException;
+import java.net.Socket;
 import java.util.Map;
 import org.graphdht.dht.HTService;
-import org.graphdht.dht.RMIHTService;
+import org.graphdht.openchord.Message.MessageType;
 
 /**
  *
  * @author nuno
  */
-public class DHTConnector<K extends Serializable, V extends Serializable> implements HTService<K, V> {
+public class DHTConnector<K extends Serializable, V extends Serializable> implements HTService<K, V>, Serializable {
 
     public static void main(String[] args) {
-        DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_I_PORT);
+        DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
         dc.connect();
         String key = "10000";
-        Serializable put = dc.put(key, "cenass");
+        Serializable put = dc.put(key, "cenass1");
+        System.out.println("put = " + put);
+        put = dc.put(key, "cenass2");
+        System.out.println("put = " + put);
+        put = dc.put(key, "cenass3");
         System.out.println("put = " + put);
 
         Serializable get = dc.get(key);
@@ -38,80 +45,78 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
      *
      */
     private final String host;
-    private RMIHTService stub;
-    private final String name;
+    private final int port;
+    private Socket socket;
+    private ObjectInputStream is;
+    private ObjectOutputStream os;
 
     public DHTConnector(String host, int port) {
         this.host = host;
-        this.name = DHTConstants.GDHT_RMI_BASENAME + port;
-        System.out.println(name);
+        this.port = port;
     }
 
     public boolean connect() {
         try {
-            stub = (RMIHTService) RMIManager.findRemoteObject(host, name);
-            System.out.println("stub = " + stub);
+            this.socket = new Socket(host, port);
+            this.os = new ObjectOutputStream(socket.getOutputStream());
+            this.is = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Connected to Open Chord at " + host + ":" + port);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     public void release() {
-        stub = null;
+        try {
+            this.socket.close();
+            this.socket = null;
+            this.is = null;
+            this.os = null;
+        } catch (IOException ex) {
+            System.out.println("Error releasing: " + ex);
+        }
+    }
+
+    public Object xchange(Message m) {
+        while (true) {
+            try {
+                os.writeObject(m);
+                Object read = is.readObject();
+                return read;
+            } catch (Exception ex) {
+                System.out.println("Reconnecting...");
+                //TODO: Better exception handling code...
+                release();
+                connect();
+            }
+        }
+
     }
 
     @Override
     public V get(K key) {
-        try {
-            return (V) stub.get(key);
-        } catch (RemoteException rmex) {
-            System.out.println("failed to get: " + key);
-            rmex.printStackTrace();
-            return null;
-        }
+        return (V) xchange(new Message(MessageType.GET, key));
     }
 
     @Override
     public V put(K key, V value) {
-        try {
-            return (V) stub.put(key, value);
-        } catch (RemoteException rmex) {
-            System.out.println("failed to put: " + key + " : " + value);
-            rmex.printStackTrace();
-            return null;
-        }
+        return (V) xchange(new Message(MessageType.PUT, new Object[]{key, value}));
     }
 
     @Override
     public V remove(K key) {
-        try {
-            return (V) stub.remove(key);
-        } catch (RemoteException rmex) {
-            System.out.println("failed to remove: " + key);
-            rmex.printStackTrace();
-            return null;
-        }
+        return (V) xchange(new Message(MessageType.REMOVE, key));
     }
 
     @Override
     public void putAll(Map<K, V> m) {
-        try {
-            stub.putAll(m);
-        } catch (RemoteException rmex) {
-            System.out.println("failed to putAll");
-            rmex.printStackTrace();
-        }
+        xchange(new Message(MessageType.PUTALL, m));
     }
 
     @Override
     public Iterable<V> getAllValues() {
-        try {
-            return stub.getAllValues();
-        } catch (RemoteException rmex) {
-            System.out.println("failed to getAllValues");
-            rmex.printStackTrace();
-            return null;
-        }
+        return (Iterable<V>) xchange(new Message(MessageType.GETALL, null));
     }
 }

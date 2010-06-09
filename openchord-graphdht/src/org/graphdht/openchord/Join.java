@@ -13,7 +13,6 @@ package org.graphdht.openchord;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 
 import static org.graphdht.openchord.DHTConstants.*;
 
@@ -49,11 +48,7 @@ public class Join {
             System.exit(-1);
         }
 
-
-
         URL localURL = null, bootstrapURL = null;
-
-
 
         try {
             localURL = new URL(localURLstr);
@@ -83,7 +78,7 @@ public class Join {
         try {
             DHTServer server = new DHTServer(chord);
             server.start();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
