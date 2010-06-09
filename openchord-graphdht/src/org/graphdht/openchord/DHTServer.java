@@ -43,7 +43,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     public void start() throws IOException {
         ServerSocket s = new ServerSocket(port);
-        System.out.println("Listening at: " + port);
+        System.out.println("DHTServer listening at: " + port);
         while (true) {
             new ListeningThread(s.accept());
         }
@@ -98,7 +98,6 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                         ex.printStackTrace();
                     }
                 } else {
-                    System.out.println("Received: " + message);
                     Object response = null;
                     switch (message.type) {
                         case GET:
@@ -126,7 +125,6 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    System.out.println("Responded: " + response);
                 }
 
             }

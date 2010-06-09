@@ -56,6 +56,9 @@
         <copy todir="bin" >
             <fileset dir="script" />
         </copy>
+        <copy todir="../neo4j/benchmark/bin/" >
+            <fileset dir="bin" />
+        </copy>
     </target>
 
     <target name="jar" depends="graphdht-oc-dist" />
@@ -65,5 +68,6 @@
     <target name="clean">
         <delete dir="build"/>
         <delete dir="bin" />
+        <delete dir="../neo4j/benchmark/bin/" />
     </target>
 </project>

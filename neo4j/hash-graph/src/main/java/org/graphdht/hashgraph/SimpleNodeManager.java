@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.graphdht.hashgraph;
 
 import java.io.Serializable;
@@ -19,34 +18,34 @@ import javax.transaction.TransactionManager;
 
 import org.graphdht.dht.HTService;
 
-
 /**
  * @author alex
  */
 public class SimpleNodeManager {
 
     HTServiceFactory fact = null;
-    HTService<Long,PropertyContainer> nodeAndRelMap;
+    HTService<Long, PropertyContainer> nodeAndRelMap;
     //SimpleHT<Node> nodeMap;
     //SimpleHT<Relationship> relationshipMap;
 
     SimpleNodeManager() {
-        nodeAndRelMap = new SimpleHT<Long,PropertyContainer>();
+        nodeAndRelMap = new SimpleHT<Long, PropertyContainer>();
         //nodeMap = new SimpleHT<Node>();
         //relationshipMap = new SimpleHT<Relationship>();
         //create reference node
         Node referenceNode = new SimpleNode(0L, this);
         //nodeMap.put(referenceNode.getId(), referenceNode );
-        nodeAndRelMap.put(referenceNode.getId(), referenceNode );
+        nodeAndRelMap.put(referenceNode.getId(), referenceNode);
     }
 
     public SimpleNodeManager(String config) {
-        if(config == "simple")
+        if ("simple".equals(config)) {
             fact = new SimpleHTServiceFactory<PropertyContainer>();
-        else if(config == "openchord")
+        } else if ("openchord".equals(config)) {
             fact = new OpenChordHTServiceFactory<SimplePropertyContainer>();
-        else
+        } else {
             throw new RuntimeException("Option for HTService not avilable");
+        }
 
         nodeAndRelMap = fact.createHTService();
         //nodeMap = new SimpleHT<Node>();
@@ -54,7 +53,7 @@ public class SimpleNodeManager {
         //create reference node
         Node referenceNode = new SimpleNode(0L, this);
         //nodeMap.put(referenceNode.getId(), referenceNode );
-        nodeAndRelMap.put(referenceNode.getId(), referenceNode );
+        nodeAndRelMap.put(referenceNode.getId(), referenceNode);
     }
 
     public Node createNode() {
@@ -67,17 +66,17 @@ public class SimpleNodeManager {
 
     public Node getNodeById(long id) {
         //return this.nodeMap.get(id);
-        return (Node)this.nodeAndRelMap.get(id);
+        return (Node) this.nodeAndRelMap.get(id);
     }
 
     public Relationship getRelationshipById(long id) {
         //return this.relationshipMap.get(id);
-        return (Relationship)this.nodeAndRelMap.get(id);
+        return (Relationship) this.nodeAndRelMap.get(id);
     }
 
     public Node getReferenceNode() {
         //return this.nodeMap.get(new Long(0));
-        return (Node)this.nodeAndRelMap.get(new Long(0));
+        return (Node) this.nodeAndRelMap.get(new Long(0));
     }
 
     /**
@@ -88,10 +87,10 @@ public class SimpleNodeManager {
     public Iterable<Node> getAllNodes() {
         //return this.nodeMap.getAllValues();
         Collection<Node> nodes = new ArrayList<Node>();
-        for(PropertyContainer node: this.nodeAndRelMap.getAllValues()){
+        for (PropertyContainer node : this.nodeAndRelMap.getAllValues()) {
 
-            if( node.getClass().equals(SimpleNode.class) ){
-                nodes.add( (Node)node);
+            if (node.getClass().equals(SimpleNode.class)) {
+                nodes.add((Node) node);
             }
         }
         return nodes;
@@ -100,16 +99,16 @@ public class SimpleNodeManager {
     public Iterable<RelationshipType> getRelationshipTypes() {
         /*Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
         for (Relationship e : this.relationshipMap.getAllValues()) {
-            if (!m.containsKey(e.getType())) {
-                m.put(e.getType(), 0);
-            }
+        if (!m.containsKey(e.getType())) {
+        m.put(e.getType(), 0);
+        }
         }
         return m.keySet();*/
         Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
         for (PropertyContainer e : this.nodeAndRelMap.getAllValues()) {
-            if( e.getClass() == Relationship.class ){
-                if (!m.containsKey(((Relationship)e).getType())) {
-                    m.put( ((Relationship)e).getType(), 0);
+            if (e.getClass() == Relationship.class) {
+                if (!m.containsKey(((Relationship) e).getType())) {
+                    m.put(((Relationship) e).getType(), 0);
                 }
             }
         }
@@ -121,9 +120,7 @@ public class SimpleNodeManager {
         return;
     }
 
-
     //methods that should not be implemented for remote DBs
-
     public boolean enableRemoteShell() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -136,9 +133,7 @@ public class SimpleNodeManager {
         System.out.println("Stub transaction started!!");
         return new PlaceboTransaction(null);
     }
-
     //methods that should not be implemented for remote DBs
-
     //private methods that need to be changed or put alsewhere
     //-1 is used by Neo4J Embedded to represent an id of something that does not exist
     static long nextId = 1;
@@ -157,7 +152,7 @@ public class SimpleNodeManager {
     public void deleteRelationship(Long aLong) {
         //isolated nodes should also be deleted
         //Relationship rel = this.relationshipMap.get(aLong);
-        Relationship rel = (Relationship)this.nodeAndRelMap.get(aLong);
+        Relationship rel = (Relationship) this.nodeAndRelMap.get(aLong);
         SimpleNode startNode = (SimpleNode) this.getNodeById(rel.getStartNode().getId());
         SimpleNode endNode = (SimpleNode) this.getNodeById(rel.getEndNode().getId());
         startNode.deleteRelationship(aLong);
@@ -168,7 +163,7 @@ public class SimpleNodeManager {
 
     public Relationship createRelationship(long simpleNodeId, long otherNodeId, RelationshipType type) {
         //SimpleNode otherNode = (SimpleNode)this.nodeMap.get(otherNodeId);
-        SimpleNode otherNode = (SimpleNode)this.nodeAndRelMap.get(otherNodeId);
+        SimpleNode otherNode = (SimpleNode) this.nodeAndRelMap.get(otherNodeId);
         if (otherNode != null) {
             Relationship rel = new SimpleRelationship(generateNextId(), simpleNodeId, otherNodeId, type, true, this);
             //this.relationshipMap.put(rel.getId(), rel);
@@ -182,8 +177,8 @@ public class SimpleNodeManager {
 
     public Node deleteNode(Long aLong) {
         //return this.nodeMap.remove(aLong);
-        Node node = (Node)this.nodeAndRelMap.get(aLong); //confirms if this is really a node
-        return (Node)this.nodeAndRelMap.remove(aLong);
+        Node node = (Node) this.nodeAndRelMap.get(aLong); //confirms if this is really a node
+        return (Node) this.nodeAndRelMap.remove(aLong);
     }
 
     /**
@@ -193,6 +188,7 @@ public class SimpleNodeManager {
      * - Chord is non transactional so real transactions should not occur
      */
     private static class PlaceboTransaction implements Transaction {
+
         private final TransactionManager transactionManager;
 
         PlaceboTransaction(TransactionManager transactionManager) {

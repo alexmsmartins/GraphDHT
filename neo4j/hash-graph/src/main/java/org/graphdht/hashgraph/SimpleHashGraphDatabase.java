@@ -1,6 +1,5 @@
 package org.graphdht.hashgraph;
 
-import org.graphdht.hashcontainer.HTServiceFactory;
 import org.neo4j.graphdb.*;
 
 import java.io.Serializable;
@@ -17,7 +16,7 @@ public class SimpleHashGraphDatabase implements GraphDatabaseService {
 
     SimpleNodeManager nodeManager;
 
-    public  SimpleHashGraphDatabase(String string ) {
+    public SimpleHashGraphDatabase(String string) {
         nodeManager = new SimpleNodeManager(string);
     }
 

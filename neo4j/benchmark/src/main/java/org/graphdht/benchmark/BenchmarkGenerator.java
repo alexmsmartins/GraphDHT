@@ -28,9 +28,7 @@ public class BenchmarkGenerator {
     /**
      *
      *
-     * 
      * @param args the command line arguments
-     *
      */
     public static void main(String[] args) {
         for (int nodeCount = SIZE_MIN; nodeCount <= SIZE_MAX; nodeCount += SIZE_INC) {
