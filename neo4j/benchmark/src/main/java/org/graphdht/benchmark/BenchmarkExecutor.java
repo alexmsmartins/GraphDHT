@@ -22,6 +22,7 @@ import org.graphdht.hashgraph.Constants;
 import org.graphdht.hashgraph.SimpleHashGraphDatabase;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 /**
  *
@@ -62,28 +63,28 @@ public class BenchmarkExecutor {
                 mainLog(testfile.getName());
                 // @NUNO
                 // EmbeddedGraphDatabase does not work...
-//                //--------------------EmbeddedGraphDatabase--------------------//
-//                mainLog(testfile + "\tEmbeddedGraphDatabase\t");
-//                System.out.println("Clean old data...");
-//                new File("var").delete(); // will delete the folder with the data...
-//                System.out.println("cleaned...");
-//                service = new EmbeddedGraphDatabase("var/test");
-//                duration = readFileIntoNeo(testfile, service);
-//                mainLog("Duration: " + duration);
-//                timesLog(testfile.getName() + "\tEmbeddedGraphDatabase\t" + duration);
-//                service.shutdown();
+                //--------------------EmbeddedGraphDatabase--------------------//
+                mainLog(testfile + "\tEmbeddedGraphDatabase\t");
+                System.out.println("Clean old data...");
+                new File("var").delete(); // will delete the folder with the data...
+                System.out.println("cleaned...");
+                service = new EmbeddedGraphDatabase("var/test");
+                duration = readFileIntoNeo(testfile, service);
+                mainLog("Duration: " + duration);
+                timesLog(testfile.getName() + "\tEmbeddedGraphDatabase\t" + duration);
+                service.shutdown();
                 //
                 //
                 //
 
-//                //--------------------SimpleHashGraphDatabase-simple--------------------//
+                //--------------------SimpleHashGraphDatabase-simple--------------------//
                 // Not necessary to clean
-//                mainLog(testfile + "\tSimpleHashGraphDatabase-simple\t");
-//                service = new SimpleHashGraphDatabase("simple");
-//                duration = readFileIntoNeo(testfile, service);
-//                mainLog("Duration: " + duration);
-//                timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-simple\t" + duration);
-//                service.shutdown();
+                mainLog(testfile + "\tSimpleHashGraphDatabase-simple\t");
+                service = new SimpleHashGraphDatabase("simple");
+                duration = readFileIntoNeo(testfile, service);
+                mainLog("Duration: " + duration);
+                timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-simple\t" + duration);
+                service.shutdown();
                 //
                 //
                 //
@@ -190,6 +191,7 @@ public class BenchmarkExecutor {
     public static void timesLog(String data) {
         try {
             timesFile.write((data + "\n").getBytes());
+            timesFile.flush();
             System.out.println(data);
         } catch (IOException ex) {
         }
@@ -202,6 +204,7 @@ public class BenchmarkExecutor {
     public static void mainLog(String data) {
         try {
             mainLogFile.write((data + "\n").getBytes());
+            mainLogFile.flush();
             System.out.println(data);
         } catch (IOException ex) {
         }
@@ -214,6 +217,7 @@ public class BenchmarkExecutor {
     public static void chordLog(String data) {
         try {
             chordLogFile.write((data + "\n").getBytes());
+            chordLogFile.flush();
             System.out.println(data);
         } catch (IOException ex) {
         }
