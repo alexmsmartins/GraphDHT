@@ -1,7 +1,5 @@
 package org.graphdht.hashgraph;
 
-import org.graphdht.dht.rmi.DHTService;
-
 import java.io.Serializable;
 
 /**
@@ -12,9 +10,9 @@ import java.io.Serializable;
  * Time: 1:10:44
  * To change this template use File | Settings | File Templates.
  */
-public class SimplePrimitive extends SimplePropertyContainer implements Serializable{
-    protected long id;
+public class SimplePrimitive extends SimplePropertyContainer implements Serializable {
 
+    protected long id;
     transient SimpleNodeManager dhtService;
 
     /**
@@ -23,10 +21,9 @@ public class SimplePrimitive extends SimplePropertyContainer implements Serializ
      * @param id unique identifier for the Primitive 
      * @param service HashMap like service parametrized to the corresponding subclass
      */
-    protected SimplePrimitive(long id, SimpleNodeManager service){
+    protected SimplePrimitive(long id, SimpleNodeManager service) {
         super();
         this.id = id;
         this.dhtService = service;
     }
-
 }

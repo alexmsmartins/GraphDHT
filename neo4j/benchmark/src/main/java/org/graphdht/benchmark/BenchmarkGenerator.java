@@ -20,10 +20,10 @@ public class BenchmarkGenerator {
 
     public static final String FN_FOLDER = "workload/";
     public static final String FN_SUFIX = ".dot";
-    private static final int NUMBER_OF_ATTEMPS = 10;
-    private static final int SIZE_MIN = 10000;
-    private static final int SIZE_INC = 10000;
-    private static final int SIZE_MAX = 100000;
+    private static final int NUMBER_OF_ATTEMPS = 2;
+    private static final int SIZE_MIN = 100;
+    private static final int SIZE_INC = 100;
+    private static final int SIZE_MAX = 1000;
 
     /**
      *
