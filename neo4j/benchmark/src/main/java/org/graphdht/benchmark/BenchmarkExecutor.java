@@ -31,8 +31,8 @@ public class BenchmarkExecutor {
 
     private static final Runtime runtime = Runtime.getRuntime();
     public static final String KILL_CHORD = "bash -c \"kill -9 `ps ax | grep openchord | awk '{print \\$1}'`\"";
-    public static final String CMD_INIT = "java -cp graphdht-oc.jar;config;lib/openchord_1.0.5.jar;lib/log4j.jar org.graphdht.openchord.Init localhost 5000";
-    public static final String CMD_JOIN = "java -cp graphdht-oc.jar;config;lib/openchord_1.0.5.jar;lib/log4j.jar org.graphdht.openchord.Join localhost 5000 localhost ";
+    public static final String CMD_INIT = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Init localhost 5000";
+    public static final String CMD_JOIN = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Join localhost 5000 localhost ";
     /**
      * At least 2...
      */
@@ -62,18 +62,20 @@ public class BenchmarkExecutor {
                 mainLog(testfile.getName());
                 // @NUNO
                 // EmbeddedGraphDatabase does not work...
-
-
 //                //--------------------EmbeddedGraphDatabase--------------------//
 //                mainLog(testfile + "\tEmbeddedGraphDatabase\t");
 //                System.out.println("Clean old data...");
-//                new File("var").delete();
+//                new File("var").delete(); // will delete the folder with the data...
 //                System.out.println("cleaned...");
 //                service = new EmbeddedGraphDatabase("var/test");
 //                duration = readFileIntoNeo(testfile, service);
 //                mainLog("Duration: " + duration);
 //                timesLog(testfile.getName() + "\tEmbeddedGraphDatabase\t" + duration);
 //                service.shutdown();
+                //
+                //
+                //
+
 //                //--------------------SimpleHashGraphDatabase-simple--------------------//
                 // Not necessary to clean
 //                mainLog(testfile + "\tSimpleHashGraphDatabase-simple\t");
@@ -82,9 +84,12 @@ public class BenchmarkExecutor {
 //                mainLog("Duration: " + duration);
 //                timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-simple\t" + duration);
 //                service.shutdown();
-
+                //
+                //
+                //
                 //--------------------SimpleHashGraphDatabase-openchord--------------------//
                 mainLog("Start new chord...");
+                // Initialize the chord processes
                 procs[0] = new ProcessManager(CMD_INIT, 5000);
                 for (int i = 1; i < NUMBER_OF_NODES; i++) {
                     procs[i] = new ProcessManager(CMD_JOIN + (5000 + i), 5000 + i);
@@ -105,6 +110,7 @@ public class BenchmarkExecutor {
                 mainLog("Duration: " + duration);
                 timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-openchord\t" + duration);
                 mainLog("Cleaning chord...");
+                // Kill chord processes
                 for (ProcessManager process : procs) {
                     process.kill();
                 }
@@ -177,6 +183,10 @@ public class BenchmarkExecutor {
         }
     }
 
+    /**
+     * System.out.println (""); can be commented...
+     *
+     */
     public static void timesLog(String data) {
         try {
             timesFile.write((data + "\n").getBytes());
@@ -185,6 +195,10 @@ public class BenchmarkExecutor {
         }
     }
 
+    /**
+     * System.out.println (""); can be commented...
+     *
+     */
     public static void mainLog(String data) {
         try {
             mainLogFile.write((data + "\n").getBytes());
@@ -193,6 +207,10 @@ public class BenchmarkExecutor {
         }
     }
 
+    /**
+     * System.out.println (""); can be commented...
+     *
+     */
     public static void chordLog(String data) {
         try {
             chordLogFile.write((data + "\n").getBytes());
