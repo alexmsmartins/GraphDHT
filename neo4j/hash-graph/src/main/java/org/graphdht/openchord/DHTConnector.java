@@ -125,4 +125,9 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
     public Iterable<V> getAllValues() {
         return (Iterable<V>) xchange(new Message(MessageType.GETALL, null));
     }
+
+    @Override
+    public void shutdown() {
+        this.release();
+    }
 }

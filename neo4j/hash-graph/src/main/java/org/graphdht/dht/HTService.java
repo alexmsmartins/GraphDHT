@@ -125,4 +125,10 @@ public interface HTService<K, V> {
     public void putAll(Map<K, V> m);
 
     public Iterable<V> getAllValues();
+
+    /**
+     * Closes and/or frees all resources related to this implementation of a Hashtable
+     * This is useful especially when implementing distributed versions of this interface 
+     */
+    public void shutdown();
 }

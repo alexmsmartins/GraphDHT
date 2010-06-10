@@ -43,6 +43,11 @@ public class SimpleHT<K,T> implements HTService<K, T> {
         return chordDHTInFuture.values();
     }
 
+    @Override
+    public void shutdown() {
+        return;
+    }
+
     public Iterable<K> getAllKeys(){
         return chordDHTInFuture.keySet();
     }

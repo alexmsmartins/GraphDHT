@@ -127,8 +127,7 @@ public class OptimizedNodeManager {
     }
 
     public void shutdown() {
-        //TODO Does it make sense to shutdown Chord here?
-        return;
+        this.nodeAndRelMap.shutdown();
     }
 
     //methods that should not be implemented for remote DBs
