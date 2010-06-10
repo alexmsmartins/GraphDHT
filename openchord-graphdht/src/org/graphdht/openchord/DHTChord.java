@@ -41,7 +41,6 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
         super();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="DHTService<Key, Serializable>">
     @Override
     public Serializable get(DHTKey key) {
         // check parameters
@@ -54,9 +53,7 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
 
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
-
         Set<Entry> result = null;
-
         boolean retrieved = false;
         while (!retrieved) {
             // find successor of id
@@ -66,18 +63,15 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
             try {
                 result = responsibleNode.retrieveEntries(id);
                 // cause while loop to end.
-
                 retrieved = true;
             } catch (CommunicationException e1) {
                 e1.printStackTrace();
                 continue;
             }
         }
-
         for (Entry entry : result) {
             return entry.getValue();
         }
-
         return null;
     }
 
@@ -100,7 +94,6 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
             Node responsibleNode;
             // try {
             responsibleNode = this.findSuccessor(id);
-
             // invoke insertEntry method
             try {
                 Set<Entry> entries = responsibleNode.retrieveEntries(id);
@@ -114,6 +107,7 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
                 responsibleNode.insertEntry(entryToInsert);
                 inserted = true;
             } catch (CommunicationException e1) {
+                e1.printStackTrace();
                 continue;
             }
         }
@@ -166,6 +160,5 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
     public Iterable<Serializable> getAllValues() {
         return null;
     }
-    // </editor-fold>
 }
 

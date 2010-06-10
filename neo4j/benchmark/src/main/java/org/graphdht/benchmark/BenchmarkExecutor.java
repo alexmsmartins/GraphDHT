@@ -16,130 +16,123 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Scanner;
-
 import org.graphdht.hashgraph.Constants;
 import org.graphdht.hashgraph.SimpleHashGraphDatabase;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 /**
  *
- * @author nuno
+ * 
+ * @author nmsa@dei.uc.pt
+ * @author pamm@dei.uc.pt
  */
 public class BenchmarkExecutor {
 
     private static final Runtime runtime = Runtime.getRuntime();
-    public static final String KILL_CHORD = "bash -c \"kill -9 `ps ax | grep openchord | awk '{print \\$1}'`\"";
-    public static final String CMD_INIT = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Init localhost 5000";
-    public static final String CMD_JOIN = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Join localhost 5000 localhost ";
+    private static final String KILL_CHORD = "bash -c \"kill -9 `ps ax | grep openchord | awk '{print \\$1}'`\"";
+    private static String cmdInit = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Init localhost 5000";
+    private static String cmdJoin = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Join localhost 5000 localhost ";
     /**
-     * At least 2...
+     * minimum 2 nodes...
      */
-    public static final int NUMBER_OF_NODES = 5;
-    public static final ProcessManager[] procs = new ProcessManager[NUMBER_OF_NODES];
+    private static final int NUMBER_OF_NODES = 5;
+    private static final ProcessManager[] procs = new ProcessManager[NUMBER_OF_NODES];
     private static FileOutputStream mainLogFile;
     private static FileOutputStream timesFile;
     private static FileOutputStream chordLogFile;
 
     public static void main(String[] args) {
+        // Adapt classpath separator if needed...
+        if (System.getProperty("os.name").contains("Windows")) {
+            cmdInit = cmdInit.replaceAll(":", ";");
+            cmdJoin = cmdJoin.replaceAll(":", ";");
+        }
+        // Start logging system...
         try {
-            // @NUNO Files to store and separate the output
-            // Not necessary to use something like log4j...
-            timesFile = new FileOutputStream("workload/test-times.log");
-            mainLogFile = new FileOutputStream("workload/test-main.log");
-            chordLogFile = new FileOutputStream("workload/test-chord.log");
-        } catch (FileNotFoundException ex) {
-            mainLog("Cannot init log file...");
+            timesFile = new FileOutputStream("log/test-times.log");
+            mainLogFile = new FileOutputStream("log/test-main.log");
+            chordLogFile = new FileOutputStream("log/test-chord.log");
+        } catch (Exception e) {
+            mainLog("Cannot init log files...");
             System.exit(0);
         }
-        mainLog("Please, kill all openchord processes using : \n" + KILL_CHORD);
+        // Start testing phase
+        mainLog("Please, kill all openchord active processes before start testing...\n\n");
         GraphDatabaseService service;
         long duration;
         File workload = new File("workload/");
-        for (File testfile : workload.listFiles()) {
-            if (testfile.getName().matches("\\S+(dot)")) {
-                mainLog(testfile.getName());
-                // @NUNO
-                // EmbeddedGraphDatabase does not work...
-                //--------------------EmbeddedGraphDatabase--------------------//
-                try {
-                    Runtime.getRuntime().exec("rm -drf var/");
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                mainLog(testfile + "\tEmbeddedGraphDatabase\t");
-                System.out.println("Clean old data...");
-                new File("var").delete(); // will delete the folder with the data...
-                System.out.println("cleaned...");
-                service = new EmbeddedGraphDatabase("var/test");
-                Transaction tx = service.beginTx();
-                duration = readFileIntoNeo(testfile, service);
-                tx.finish();
-                mainLog("Duration: " + duration);
-                timesLog(testfile.getName() + "\tEmbeddedGraphDatabase\t" + duration);
-                service.shutdown();
-                //
-                //
-                //
+        mainLog("Working on: " + workload.getAbsolutePath());
+        for (File testfile : workload.listFiles(new FilenameFilter() {
 
-                //--------------------SimpleHashGraphDatabase-simple--------------------//
-                // Not necessary to clean
-                mainLog(testfile + "\tSimpleHashGraphDatabase-simple\t");
-                service = new SimpleHashGraphDatabase("simple");
-                duration = readFileIntoNeo(testfile, service);
-                mainLog("Duration: " + duration);
-                timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-simple\t" + duration);
-                service.shutdown();
-                //
-                //
-                //
-                //--------------------SimpleHashGraphDatabase-openchord--------------------//
-                try {
-                    Runtime.getRuntime().exec("kill -9 `ps ax | grep openchord | awk '{print \\$1}'`");
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                mainLog("Start new chord...");
-                // Initialize the chord processes
-                procs[0] = new ProcessManager(CMD_INIT, 5000);
-                for (int i = 1; i < NUMBER_OF_NODES; i++) {
-                    procs[i] = new ProcessManager(CMD_JOIN + (5000 + i), 5000 + i);
-                }
-                mainLog("Waiting for chord to be ready...");
-                try {
-                    Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                //System.out.println("Press any key after activating Chord nodes manually");
-                //Scanner scan = new Scanner(System.in);
-                //scan.nextLine();
-                mainLog("Chord ready...");
-
-                mainLog(testfile + "\tSimpleHashGraphDatabase-openchord\t");
-
-                service = new SimpleHashGraphDatabase("openchord");
-                duration = readFileIntoNeo(testfile, service);
-
-                mainLog("Duration: " + duration);
-                timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-openchord\t" + duration);
-                mainLog("Cleaning chord...");
-                // Kill chord processes
-                for (ProcessManager process : procs) {
-                    process.kill();
-                }
-                for (ProcessManager process : procs) {
-                    process.waitfinish();
-                }
-                mainLog("// Clean");
-                // Shutdown Neo4J
-                service.shutdown();
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".dot");
             }
+        })) {
+            mainLog("Testing file: " + testfile);
+//            //--------------------EmbeddedGraphDatabase--------------------//
+//            mainLog("EmbeddedGraphDatabase\t" + testfile.getName());
+//            File var = new File("var");
+//            if (var.exists()) {
+//                mainLog("var folder removed = " + var.delete());
+//            } else {
+//                mainLog("var directory does not exist...");
+//            }
+//            service = new EmbeddedGraphDatabase("var/test");
+//            Transaction tx = service.beginTx();
+//            duration = readFileIntoNeo(testfile, service);
+//            tx.finish();
+//            mainLog("Duration: " + duration);
+//            timesLog(testfile.getName() + "\tEmbeddedGraphDatabase\t" + duration);
+//            service.shutdown();
+//            //
+//            //
+//            //
+//            //--------------------SimpleHashGraphDatabase-simple--------------------//
+//            // Not necessary to clean
+//            mainLog("SimpleHashGraphDatabase-simple\t" + testfile.getName());
+//            service = new SimpleHashGraphDatabase("simple");
+//            duration = readFileIntoNeo(testfile, service);
+//            mainLog("Duration: " + duration);
+//            timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-simple\t" + duration);
+//            service.shutdown();
+            //
+            //
+            //
+            //--------------------SimpleHashGraphDatabase-openchord--------------------//
+            mainLog("Start new chord...");
+            // Initialize the chord processes
+            procs[0] = new ProcessManager(cmdInit, 5000);
+            for (int i = 1; i < NUMBER_OF_NODES; i++) {
+                procs[i] = new ProcessManager(cmdJoin + (5000 + i), 5000 + i);
+            }
+            mainLog("Waiting for chord to be ready...");
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            mainLog("Chord ready...");
+
+            mainLog("SimpleHashGraphDatabase-openchord\t" + testfile.getName());
+            service = new SimpleHashGraphDatabase("openchord");
+            duration = readFileIntoNeo(testfile, service);
+            mainLog("Duration: " + duration);
+            timesLog(testfile.getName() + "\tSimpleHashGraphDatabase-openchord\t" + duration);
+            mainLog("Cleaning chord...");
+            // Kill chord processes
+            for (ProcessManager process : procs) {
+                process.kill();
+            }
+            for (ProcessManager process : procs) {
+                process.waitfinish();
+            }
+            mainLog("// Clean");
+            // Shutdown Neo4J
+            service.shutdown();
         }
     }
 
@@ -147,10 +140,10 @@ public class BenchmarkExecutor {
      * Executes the test and returns the duration of the process
      *
      * @param testfile
-     * @param serv
+     * @param service
      * @return 
      */
-    private static long readFileIntoNeo(File testfile, GraphDatabaseService serv) {
+    private static long readFileIntoNeo(File testfile, GraphDatabaseService service) {
         long inititalTime = System.currentTimeMillis();
         BufferedReader reader = null;
         try {
@@ -159,7 +152,7 @@ public class BenchmarkExecutor {
             return -1;
         }
 
-        String line;
+        String line = null;
         Node node = null, previousNode;
         HashMap<Long, Long> addedNodes = new HashMap<Long, Long>();
         try {
@@ -171,33 +164,35 @@ public class BenchmarkExecutor {
         while (true) {
             try {
                 line = reader.readLine().trim();
-                if (line.charAt(0) == '}') {
-                    try {
-                        reader.close();
-                    } catch (IOException ex) {
-                    }
-                    return System.currentTimeMillis() - inititalTime;
+            } catch (IOException io) {
+            }
+            if (line.charAt(0) == '}') {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
                 }
-                line = line.substring(0, line.length() /*- 1*/); //excludes the ';' character
-                String[] tokens = line.trim().split(" -- ");
-                previousNode = null;
-                for (String str : tokens) {
-                    str = str.trim();
-                    Long id = Long.parseLong(str);
-                    if (addedNodes.containsKey(id)) {
-                        node = serv.getNodeById(addedNodes.get(id));
-                    } else {
-                        node = serv.createNode();
-                        node.setProperty("id", id.toString());
-                        addedNodes.put(id, node.getId());
-                    }
-                    //add relationship between this node and the previous one
-                    if (previousNode != null) {
-                        previousNode.createRelationshipTo(node, Constants.MyRelationshipType.KNOWS);
-                        previousNode = node;
-                    }
+                return System.currentTimeMillis() - inititalTime;
+            }
+            if (line.charAt(line.length() - 1) == ';') {
+                line = line.substring(0, line.length() - 1);
+            }
+            String[] tokens = line.split("--");
+            previousNode = null;
+            for (String str : tokens) {
+                Long id = Long.parseLong(str.trim());
+                if (addedNodes.containsKey(id)) {
+                    node = service.getNodeById(addedNodes.get(id));
+                    System.out.println("node = " + node);
+                } else {
+                    node = service.createNode();
+                    node.setProperty("id", id.toString());
+                    addedNodes.put(id, node.getId());
                 }
-            } catch (IOException ex) {
+                //add relationship between this node and the previous one
+                if (previousNode != null) {
+                    previousNode.createRelationshipTo(node, Constants.MyRelationshipType.KNOWS);
+                }
+                previousNode = node;
             }
         }
     }
@@ -234,9 +229,9 @@ public class BenchmarkExecutor {
      */
     public static void chordLog(String data) {
         try {
-            chordLogFile.write((data + "\n").getBytes());
-            chordLogFile.flush();
-            System.out.println(data);
+            chordLogFile.write(data.getBytes());
+//            chordLogFile.flush();
+//            System.out.println(data);
         } catch (IOException ex) {
         }
     }

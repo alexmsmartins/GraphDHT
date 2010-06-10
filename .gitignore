@@ -8,6 +8,9 @@ openchord-graphdht/nbproject/private/
 openchord-graphdht/bin/
 neo4j/benchmark/workload/*
 neo4j/benchmark/bin/*
+neo4j/benchmark/local-data/*
+neo4j/benchmark/log/*
+neo4j/benchmark/var/
 
 #ignore maven build directories in general
 target/

@@ -10,12 +10,14 @@
  **********************************************************/
 package org.graphdht.openchord;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.graphdht.dht.HTService;
@@ -32,6 +34,24 @@ import static org.graphdht.openchord.DHTConstants.*;
  */
 public class DHTServer<K extends Serializable, V extends Serializable> implements HTService<K, V> {
 
+    public static final boolean DEBUG = true;
+    private FileOutputStream debugLogFile;
+
+    public void debug(String debug) {
+        if (DEBUG) {
+            if (debugLogFile == null) {
+                try {
+                    this.debugLogFile = new FileOutputStream("../log/DHTServer-" + port + "-debug.log", true);
+                    this.debugLogFile.write(("\n\n" + new Date() + "\n\n").getBytes());
+                } catch (Exception ex) {
+                }
+            }
+            try {
+                debugLogFile.write((debug + "\n").getBytes());
+            } catch (Exception ex) {
+            }
+        }
+    }
     private final DHTChord chord;
     private final int port;
 
@@ -51,7 +71,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     public class ListeningThread extends Thread {
 
-        private final Socket socket;
+        private Socket socket;
 
         private ListeningThread(Socket socket) {
             this.socket = socket;
@@ -60,7 +80,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
         @Override
         public void run() {
-            System.out.println("DHTServer thread is spawning after receiving a socket");
+            debug("DHTServer thread is spawning after receiving a socket");
             ObjectInputStream is;
             ObjectOutputStream os;
             try {
@@ -79,90 +99,113 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                     try {
                         socket.close();
                     } catch (IOException ex1) {
-                        System.out.println("cannot close socket: " + ex1);
+                        debug("cannot close socket: " + ex1);
                     }
                     return;
                 } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
                 if (message == null) {
-                    System.out.println(socket.getPort() + " message == null");
-                    System.out.println(socket.getPort() + " in " + socket.isInputShutdown());
-                    System.out.println(socket.getPort() + " out " + socket.isOutputShutdown());
-                    System.out.println(socket.getPort() + " message == null");
+                    debug(socket.getPort() + " message == null");
+                    debug(socket.getPort() + " in " + socket.isInputShutdown());
+                    debug(socket.getPort() + " out " + socket.isOutputShutdown());
+                    debug(socket.getPort() + " message == null");
                     if (socket.isClosed()) {
-                        System.out.println(socket.getPort() + " CLOSED...");
-                    }
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                        debug(socket.getPort() + " CLOSED...");
                     }
                 } else {
-                    Object response = null;
+                    Object response = "null";
                     switch (message.type) {
                         case GET:
-                            System.out.println("Chord received a GET request");
                             response = get((K) message.obj);
-                            ;
                             break;
                         case PUT:
-                            System.out.println("Chord received a PUT request");
                             Object[] objects = (Object[]) message.obj;
                             response = put((K) objects[0], (V) objects[1]);
                             break;
                         case REMOVE:
-                            System.out.println("Chord received a REMOVE request");
                             response = remove((K) message.obj);
-                            ;
                             break;
                         case PUTALL:
-                            System.out.println("Chord received a PUTALL request");
                             putAll((Map<K, V>) message.obj);
                             break;
                         case GETALL:
-                            System.out.println("Chord received a GETALL request");
                             response = getAllValues();
                             break;
                     }
                     try {
+                        debug("Ready to write...");
                         os.writeObject(response);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
-
             }
-
         }
     }
 
     @Override
     public V get(K key) {
-        return (V) chord.get(new DHTKey(key)); // HERE
+        debug("GET " + key);
+        try {
+            return (V) chord.get(new DHTKey(key)); // HERE
+        } catch (Exception e) {
+            debug("Exception " + e);
+            e.printStackTrace();
+            return null;
+        } finally {
+            debug("DONE " + key);
+        }
     }
 
     @Override
     public V put(K key, V value) {
-        return (V) chord.put(new DHTKey(key), value);
+        debug("PUT " + key + ":" + value);
+        try {
+            return (V) chord.put(new DHTKey(key), value);
+        } catch (Exception e) {
+            debug("Exception " + e);
+            e.printStackTrace();
+            return null;
+        } finally {
+            debug("DONE " + key);
+        }
     }
 
     @Override
     public V remove(K key) {
-        return (V) chord.remove(new DHTKey(key));
+        debug("REMOVE " + key);
+        try {
+            return (V) chord.remove(new DHTKey(key));
+        } catch (Exception e) {
+            debug("Exception " + e);
+            e.printStackTrace();
+            return null;
+        } finally {
+            debug("DONE " + key);
+        }
     }
 
     @Override
     public void putAll(Map<K, V> values) {
-        Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
-        for (K key : values.keySet()) {
-            map.put(new DHTKey(key), values.get(key));
+        debug("PUTALL " + values);
+        try {
+            Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
+            for (K key : values.keySet()) {
+                map.put(new DHTKey(key), values.get(key));
+            }
+            chord.putAll(map);
+        } catch (Exception e) {
+            debug("Exception " + e);
+            e.printStackTrace();
+        } finally {
+            debug("DONE " + values);
         }
-        chord.putAll(map);
     }
 
     @Override
     public Iterable<V> getAllValues() {
+        debug("GETALL ");
         return null;
     }
 }

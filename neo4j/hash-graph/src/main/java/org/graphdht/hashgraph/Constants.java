@@ -10,7 +10,9 @@ import org.neo4j.graphdb.RelationshipType;
  * To change this template use File | Settings | File Templates.
  */
 public class Constants {
+
     public enum MyRelationshipType implements RelationshipType {
+
         KNOWS
     }
 }
