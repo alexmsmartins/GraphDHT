@@ -29,6 +29,10 @@ public class Simulate {
      * @param args
      */
     public static void main(String[] args) {
+        int nodeCount = GDHT_SIMULATION_NODECOUNT;
+        if (args.length > 0) {
+            nodeCount = Integer.parseInt(args[0]);
+        }
         de.uniba.wiai.lspi.chord.service.PropertiesLoader.loadPropertyFile();
         final String nodeNamePrefix = "oclocal://node";
         final String nodeNameSuffix = "/";
@@ -53,7 +57,7 @@ public class Simulate {
         }
 
         URL nodesURL = null;
-        for (int i = 0; i < GDHT_SIMULATION_NODECOUNT; i++) {
+        for (int i = 0; i < nodeCount; i++) {
             try {
                 nodesURL = new URL(nodeNamePrefix + (nodeId++) + nodeNameSuffix);
             } catch (MalformedURLException ex) {

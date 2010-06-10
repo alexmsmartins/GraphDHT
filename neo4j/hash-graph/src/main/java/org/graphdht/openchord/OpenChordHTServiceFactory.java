@@ -1,3 +1,13 @@
+/**********************************************************
+ * Doctoral Program in Science and Information Technology
+ * Department of Informatics Engineering
+ * University of Coimbra
+ **********************************************************
+ * Large Scale Concurrent Systems
+ *
+ * Pedro Alexandre Mesquita Santos Martins - pamm@dei.uc.pt
+ * Nuno Manuel dos Santos Antunes - nmsa@dei.uc.pt
+ **********************************************************/
 package org.graphdht.openchord;
 
 import org.graphdht.dht.HTService;
@@ -16,7 +26,7 @@ public class OpenChordHTServiceFactory<V extends Serializable> implements HTServ
 
     @Override
     public HTService createHTService() {
-        DHTConnector service = new DHTConnector<Long, V>("127.0.0.1", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
+        DHTConnector service = new DHTConnector<Long, V>();
         service.connect();
         return service;
     }

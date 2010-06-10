@@ -814,20 +814,16 @@ public class ChordImpl implements Chord, Report, AsynChord {
      * @return Responsible node.
      */
     public Node findSuccessor(ID key) {
-
         if (key == null) {
             NullPointerException e = new NullPointerException(
                     "ID to find successor for may not be null!");
             this.logger.error("Null pointer.", e);
             throw e;
         }
-
         boolean debug = this.logger.isEnabledFor(DEBUG);
-
         // check if the local node is the only node in the network
         Node successor = this.references.getSuccessor();
         if (successor == null) {
-
             if (this.logger.isEnabledFor(INFO)) {
                 this.logger.info("I appear to be the only node in the network, so I am "
                         + "my own "

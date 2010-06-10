@@ -20,6 +20,8 @@ import org.graphdht.dht.HTService;
 import org.graphdht.openchord.Message.MessageType;
 
 /**
+ * Now this is the only copy of the file...
+ *
  *
  * @author nuno
  */
@@ -49,6 +51,10 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
     private Socket socket;
     private ObjectInputStream is;
     private ObjectOutputStream os;
+
+    public DHTConnector() {
+        this("10.3.3.68", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
+    }
 
     public DHTConnector(String host, int port) {
         this.host = host;

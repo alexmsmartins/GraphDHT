@@ -12,7 +12,7 @@ package org.graphdht.openchord;
 
 /**
  *
- * @author nuno
+ * @author nmsa@dei.uc.pt
  */
 public class DHTConstants {
 
@@ -22,7 +22,7 @@ public class DHTConstants {
     public static final String GOC_JOIN_HELP_MESSAGE = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Join bootStrapIP bootStrapPort localIP localPort ";
     public static final String GOC_INIT_HELP_MESSAGE = "java -cp graphdht-oc.jar:config:lib/openchord_1.0.5.jar:lib/log4j.jar org.graphdht.openchord.Init localIP localPort ";
     public static final String GDHT_LOCALHOST = "127.0.0.1";
-    public static final int GDHT_SIMULATION_NODECOUNT = 2;
+    public static final int GDHT_SIMULATION_NODECOUNT = 5;
     public static final String GDHT_RMI_BASENAME = "GDHTd_";
 
     private DHTConstants() {

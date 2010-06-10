@@ -14,6 +14,38 @@
     <name>benchmark</name>
     <description>Utility for benchmarking neo4j and maybe other things.</description>
     <url></url>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectory>\\10.3.3.68\LSCS\</outputDirectory>
+                    <descriptorRefs>
+                        <descriptorRef>
+                            jar-with-dependencies
+                        </descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>
+                                org.graphdht.benchmark.BenchmarkExecutor
+                            </mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -26,10 +58,10 @@
             <artifactId>neo</artifactId>
             <version>1.0-b8-SNAPSHOT</version>
         </dependency>
-      <dependency>
-        <groupId>org.graphdht</groupId>
-        <artifactId>hash-graph</artifactId>
-        <version>1.0-SNAPSHOT</version>
-      </dependency>
+        <dependency>
+            <groupId>org.graphdht</groupId>
+            <artifactId>hash-graph</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

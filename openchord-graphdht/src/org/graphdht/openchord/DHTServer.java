@@ -10,6 +10,7 @@
  **********************************************************/
 package org.graphdht.openchord;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,6 +21,7 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.graphdht.dht.HTService;
 import static org.graphdht.openchord.DHTConstants.*;
 
@@ -28,37 +30,23 @@ import static org.graphdht.openchord.DHTConstants.*;
  *
  *
  *
- * @param <K>
+ * @param <K> 
  * @param <V>
  * @author nmsa@dei.uc.pt
  */
 public class DHTServer<K extends Serializable, V extends Serializable> implements HTService<K, V> {
 
-    public static final boolean DEBUG = true;
-    private FileOutputStream debugLogFile;
-
-    public void debug(String debug) {
-        if (DEBUG) {
-            if (debugLogFile == null) {
-                try {
-                    this.debugLogFile = new FileOutputStream("../log/DHTServer-" + port + "-debug.log", true);
-                    this.debugLogFile.write(("\n\n" + new Date() + "\n\n").getBytes());
-                } catch (Exception ex) {
-                }
-            }
-            try {
-                debugLogFile.write((debug + "\n").getBytes());
-            } catch (Exception ex) {
-            }
-        }
-    }
     private final DHTChord chord;
     private final int port;
+    private Logger logger;
+    private long comunication;
+    private long working;
 
     public DHTServer(DHTChord chord) {
         super();
         this.chord = chord;
         this.port = GDHT_OPENCHORD_SERVER_ADD + (chord.getURL().getPort() > 0 ? chord.getURL().getPort() : GDHT_OPENCHORD_I_PORT);
+        logger = new Logger();
     }
 
     public void start() throws IOException {
@@ -66,6 +54,86 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
         System.out.println("DHTServer listening at: " + port);
         while (true) {
             new ListeningThread(s.accept());
+        }
+    }
+
+    public class Logger extends Thread {
+
+        private FileOutputStream logFile;
+        private boolean running = true;
+        private StringBuffer buffer;
+        private int p;
+        private int r;
+        private int g;
+        private int ga;
+        private int pa;
+
+        private Logger() {
+            running = true;
+            buffer = new StringBuffer("\nStarted!\n");
+            try {
+                new File("../log/").mkdir();
+                logFile = new FileOutputStream("../log/DHTServer-" + port + "-debug.log", true);
+            } catch (Exception ex) {
+                System.out.println("Cannot start log");
+            }
+            this.start();
+        }
+
+        public void shutdown() {
+            running = false;
+        }
+
+        @Override
+        public void run() {
+            StringBuffer local;
+            while (running) {
+                try {
+                    TimeUnit.SECONDS.sleep(120);
+                } catch (InterruptedException ie) {
+                }
+                synchronized (this) {
+                    local = buffer;
+                    buffer = new StringBuffer(new Date().toString());
+                    buffer.append("\n");
+                }
+                local.append("P:   ").append(p);
+                local.append("\nG:   ").append(g);
+                local.append("\nR:   ").append(r);
+                local.append("\nPA:  ").append(pa);
+                local.append("\nGA:  ").append(ga);
+                local.append("\nCOM: ").append(comunication);
+                local.append("\nWORK:").append(working).append("\n");
+                try {
+                    logFile.write(local.toString().getBytes());
+                } catch (IOException io) {
+                }
+            }
+        }
+
+        private void logE(Exception e) {
+            buffer.append(e);
+            buffer.append("\n");
+        }
+
+        private void logR() {
+            r++;
+        }
+
+        private void logG() {
+            g++;
+        }
+
+        private void logP() {
+            p++;
+        }
+
+        private void logPA() {
+            pa++;
+        }
+
+        private void logGA() {
+            ga++;
         }
     }
 
@@ -80,7 +148,8 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
         @Override
         public void run() {
-            debug("DHTServer thread is spawning after receiving a socket");
+            long one, two = 0;
+            System.out.println("DHTServer thread is spawning after receiving a socket");
             ObjectInputStream is;
             ObjectOutputStream os;
             try {
@@ -94,24 +163,24 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
             while (true) {
                 Message message = null;
                 try {
+                    one = System.currentTimeMillis();
                     message = (Message) is.readObject();
+                    two = System.currentTimeMillis();
+                    comunication += two - one;
                 } catch (IOException ex) {
                     try {
                         socket.close();
                     } catch (IOException ex1) {
-                        debug("cannot close socket: " + ex1);
+                        logger.logE(ex1);
                     }
                     return;
                 } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
                 if (message == null) {
-                    debug(socket.getPort() + " message == null");
-                    debug(socket.getPort() + " in " + socket.isInputShutdown());
-                    debug(socket.getPort() + " out " + socket.isOutputShutdown());
-                    debug(socket.getPort() + " message == null");
+                    System.out.println(socket.getPort() + " message == null");
                     if (socket.isClosed()) {
-                        debug(socket.getPort() + " CLOSED...");
+                        System.out.println(socket.getPort() + " CLOSED...");
                     }
                 } else {
                     Object response = "null";
@@ -134,8 +203,11 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                             break;
                     }
                     try {
-                        debug("Ready to write...");
+                        one = System.currentTimeMillis();
+                        working += one - two;
                         os.writeObject(response);
+                        two = System.currentTimeMillis();
+                        comunication += two - one;
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -146,49 +218,49 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     @Override
     public V get(K key) {
-        debug("GET " + key);
+        logger.logG();
         try {
             return (V) chord.get(new DHTKey(key)); // HERE
         } catch (Exception e) {
-            debug("Exception " + e);
+            logger.logE(e);
             e.printStackTrace();
             return null;
         } finally {
-            debug("DONE " + key);
+            //  debug("DONE " + key);
         }
     }
 
     @Override
     public V put(K key, V value) {
-        debug("PUT " + key + ":" + value);
+        logger.logP();
         try {
             return (V) chord.put(new DHTKey(key), value);
         } catch (Exception e) {
-            debug("Exception " + e);
+            logger.logE(e);
             e.printStackTrace();
             return null;
         } finally {
-            debug("DONE " + key);
+            //  debug("DONE " + key);
         }
     }
 
     @Override
     public V remove(K key) {
-        debug("REMOVE " + key);
+        logger.logR();
         try {
             return (V) chord.remove(new DHTKey(key));
         } catch (Exception e) {
-            debug("Exception " + e);
+            logger.logE(e);
             e.printStackTrace();
             return null;
         } finally {
-            debug("DONE " + key);
+            //  debug("DONE " + key);
         }
     }
 
     @Override
     public void putAll(Map<K, V> values) {
-        debug("PUTALL " + values);
+        logger.logPA();
         try {
             Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
             for (K key : values.keySet()) {
@@ -196,16 +268,16 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
             }
             chord.putAll(map);
         } catch (Exception e) {
-            debug("Exception " + e);
+            logger.logE(e);
             e.printStackTrace();
         } finally {
-            debug("DONE " + values);
+            //  debug("DONE " + values);
         }
     }
 
     @Override
     public Iterable<V> getAllValues() {
-        debug("GETALL ");
+        logger.logGA();
         return null;
     }
 }

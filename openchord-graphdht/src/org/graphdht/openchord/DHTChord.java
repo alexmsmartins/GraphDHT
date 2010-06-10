@@ -45,12 +45,10 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
     public Serializable get(DHTKey key) {
         // check parameters
         if (key == null) {
-            NullPointerException e = new NullPointerException(
-                    "Key must not have value null!");
+            NullPointerException e = new NullPointerException("Key must not have value null!");
             this.logger.error("Null pointer", e);
             throw e;
         }
-
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
         Set<Entry> result = null;
@@ -120,18 +118,15 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
         if (key == null) {
             throw new NullPointerException("The parameter cannot have value null!");
         }
-
         Serializable oldValue = null;
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
-
         boolean inserted = false;
         while (!inserted) {
             // find successor of id
             Node responsibleNode;
             // try {
             responsibleNode = this.findSuccessor(id);
-
             // invoke insertEntry method
             try {
                 Set<Entry> entries = responsibleNode.retrieveEntries(id);

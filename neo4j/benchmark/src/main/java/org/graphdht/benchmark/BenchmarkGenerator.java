@@ -10,6 +10,7 @@
  **********************************************************/
 package org.graphdht.benchmark;
 
+import java.io.File;
 import java.util.Random;
 
 /**
@@ -21,9 +22,9 @@ public class BenchmarkGenerator {
     public static final String FN_FOLDER = "workload/";
     public static final String FN_SUFIX = ".dot";
     private static final int NUMBER_OF_ATTEMPS = 2;
-    private static final int SIZE_MIN = 100;
-    private static final int SIZE_INC = 100;
-    private static final int SIZE_MAX = 1000;
+    private static final int SIZE_MIN = 1000;
+    private static final int SIZE_INC = 1000;
+    private static final int SIZE_MAX = 10000;
 
     /**
      *
@@ -31,6 +32,7 @@ public class BenchmarkGenerator {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        new File(FN_FOLDER).mkdir();
         for (int nodeCount = SIZE_MIN; nodeCount <= SIZE_MAX; nodeCount += SIZE_INC) {
             for (int att = 0; att < NUMBER_OF_ATTEMPS; att++) {
                 //
