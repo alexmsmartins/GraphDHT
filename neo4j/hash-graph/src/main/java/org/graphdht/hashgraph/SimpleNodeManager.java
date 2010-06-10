@@ -24,18 +24,18 @@ import org.graphdht.dht.HTService;
 public class SimpleNodeManager {
 
     HTServiceFactory fact = null;
-    HTService<Long, PropertyContainer> nodeAndRelMap;
+    HTService<Long, SimplePrimitive> nodeAndRelMap;
     //SimpleHT<Node> nodeMap;
     //SimpleHT<Relationship> relationshipMap;
 
     SimpleNodeManager() {
-        nodeAndRelMap = new SimpleHT<Long, PropertyContainer>();
+        nodeAndRelMap = new SimpleHT<Long, SimplePrimitive>();
         //nodeMap = new SimpleHT<Node>();
         //relationshipMap = new SimpleHT<Relationship>();
         //create reference node
         Node referenceNode = new SimpleNode(0L, this);
         //nodeMap.put(referenceNode.getId(), referenceNode );
-        nodeAndRelMap.put(referenceNode.getId(), referenceNode);
+        nodeAndRelMap.put(referenceNode.getId(), (SimplePrimitive) referenceNode);
     }
 
     public SimpleNodeManager(String config) {
@@ -53,30 +53,36 @@ public class SimpleNodeManager {
         //create reference node
         Node referenceNode = new SimpleNode(0L, this);
         //nodeMap.put(referenceNode.getId(), referenceNode );
-        nodeAndRelMap.put(referenceNode.getId(), referenceNode);
+        nodeAndRelMap.put(referenceNode.getId(), (SimplePrimitive) referenceNode);
     }
 
     public Node createNode() {
         Node node = null;
         node = new SimpleNode(generateNextId(), this);
         //this.nodeMap.put(node.getId(), node);
-        this.nodeAndRelMap.put(node.getId(), node);
+        this.nodeAndRelMap.put(node.getId(), (SimplePrimitive) node);
         return node;
     }
 
     public Node getNodeById(long id) {
         //return this.nodeMap.get(id);
-        return (Node) this.nodeAndRelMap.get(id);
+        SimpleNode node = (SimpleNode) this.nodeAndRelMap.get(id);
+        node.setSimpleNodeManager(this);
+        return node;
     }
 
     public Relationship getRelationshipById(long id) {
         //return this.relationshipMap.get(id);
-        return (Relationship) this.nodeAndRelMap.get(id);
+        SimpleRelationship rel = (SimpleRelationship) this.nodeAndRelMap.get(id);
+        rel.setSimpleNodeManager(this);
+        return rel;
     }
 
     public Node getReferenceNode() {
         //return this.nodeMap.get(new Long(0));
-        return (Node) this.nodeAndRelMap.get(new Long(0));
+        SimpleNode node = (SimpleNode) this.nodeAndRelMap.get(new Long(0));
+        node.setSimpleNodeManager(this);
+        return node;
     }
 
     /**
@@ -87,9 +93,10 @@ public class SimpleNodeManager {
     public Iterable<Node> getAllNodes() {
         //return this.nodeMap.getAllValues();
         Collection<Node> nodes = new ArrayList<Node>();
-        for (PropertyContainer node : this.nodeAndRelMap.getAllValues()) {
-
+        for (SimplePrimitive node : this.nodeAndRelMap.getAllValues()) {
+            node.setSimpleNodeManager(this);
             if (node.getClass().equals(SimpleNode.class)) {
+
                 nodes.add((Node) node);
             }
         }
@@ -105,8 +112,10 @@ public class SimpleNodeManager {
         }
         return m.keySet();*/
         Map<RelationshipType, Integer> m = new HashMap<RelationshipType, Integer>();
-        for (PropertyContainer e : this.nodeAndRelMap.getAllValues()) {
-            if (e.getClass() == Relationship.class) {
+        for (SimplePrimitive e : this.nodeAndRelMap.getAllValues()) {
+            e.setSimpleNodeManager(this);
+            //FIXME this comparison might cause problem 
+            if (e.getClass() == SimpleRelationship.class) {
                 if (!m.containsKey(((Relationship) e).getType())) {
                     m.put(((Relationship) e).getType(), 0);
                 }
@@ -152,9 +161,12 @@ public class SimpleNodeManager {
     public void deleteRelationship(Long aLong) {
         //isolated nodes should also be deleted
         //Relationship rel = this.relationshipMap.get(aLong);
-        Relationship rel = (Relationship) this.nodeAndRelMap.get(aLong);
-        SimpleNode startNode = (SimpleNode) this.getNodeById(rel.getStartNode().getId());
-        SimpleNode endNode = (SimpleNode) this.getNodeById(rel.getEndNode().getId());
+        SimplePrimitive rel = this.nodeAndRelMap.get(aLong);
+        rel.setSimpleNodeManager(this);
+        SimpleNode startNode = (SimpleNode) this.getNodeById(
+                ((SimpleRelationship)rel).getStartNode().getId());
+        SimpleNode endNode = (SimpleNode) this.getNodeById(
+                ((SimpleRelationship)rel).getEndNode().getId());
         startNode.deleteRelationship(aLong);
         endNode.deleteRelationship(aLong);
         //this.relationshipMap.remove(aLong);
@@ -164,10 +176,11 @@ public class SimpleNodeManager {
     public Relationship createRelationship(long simpleNodeId, long otherNodeId, RelationshipType type) {
         //SimpleNode otherNode = (SimpleNode)this.nodeMap.get(otherNodeId);
         SimpleNode otherNode = (SimpleNode) this.nodeAndRelMap.get(otherNodeId);
+        otherNode.setSimpleNodeManager(this);
         if (otherNode != null) {
             Relationship rel = new SimpleRelationship(generateNextId(), simpleNodeId, otherNodeId, type, true, this);
             //this.relationshipMap.put(rel.getId(), rel);
-            this.nodeAndRelMap.put(rel.getId(), rel);
+            this.nodeAndRelMap.put(rel.getId(), (SimplePrimitive) rel);
             otherNode.addRelationship(rel);
             return rel;
         } else {
@@ -177,7 +190,7 @@ public class SimpleNodeManager {
 
     public Node deleteNode(Long aLong) {
         //return this.nodeMap.remove(aLong);
-        Node node = (Node) this.nodeAndRelMap.get(aLong); //confirms if this is really a node
+        //Node node = (Node) this.nodeAndRelMap.get(aLong); //confirms if this is really a node
         return (Node) this.nodeAndRelMap.remove(aLong);
     }
 
