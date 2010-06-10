@@ -67,6 +67,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
         private int g;
         private int ga;
         private int pa;
+        private String last = "Moelix :D";
 
         private Logger() {
             running = true;
@@ -89,7 +90,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
             StringBuffer local;
             while (running) {
                 try {
-                    TimeUnit.SECONDS.sleep(120);
+                    TimeUnit.SECONDS.sleep(20);
                 } catch (InterruptedException ie) {
                 }
                 synchronized (this) {
@@ -104,6 +105,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                 local.append("\nGA:  ").append(ga);
                 local.append("\nCOM: ").append(comunication);
                 local.append("\nWORK:").append(working).append("\n");
+                local.append("\nLast:").append(this.last).append("\n");
                 try {
                     logFile.write(local.toString().getBytes());
                 } catch (IOException io) {
@@ -116,23 +118,28 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
             buffer.append("\n");
         }
 
-        private void logR() {
+        private void logR(String last) {
+            this.last = "R" + last;
             r++;
         }
 
-        private void logG() {
+        private void logG(String last) {
+            this.last = "G" + last;
             g++;
         }
 
-        private void logP() {
+        private void logP(String last) {
+            this.last = "P" + last;
             p++;
         }
 
-        private void logPA() {
+        private void logPA(String last) {
+            this.last = "PA" + last;
             pa++;
         }
 
         private void logGA() {
+            this.last = "GA";
             ga++;
         }
     }
@@ -218,7 +225,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     @Override
     public V get(K key) {
-        logger.logG();
+        logger.logG(key.toString());
         try {
             return (V) chord.get(new DHTKey(key)); // HERE
         } catch (Exception e) {
@@ -232,7 +239,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     @Override
     public V put(K key, V value) {
-        logger.logP();
+        logger.logP(key.toString() + ":" + value.toString());
         try {
             return (V) chord.put(new DHTKey(key), value);
         } catch (Exception e) {
@@ -246,7 +253,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     @Override
     public V remove(K key) {
-        logger.logR();
+        logger.logR(key.toString());
         try {
             return (V) chord.remove(new DHTKey(key));
         } catch (Exception e) {
@@ -260,7 +267,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
     @Override
     public void putAll(Map<K, V> values) {
-        logger.logPA();
+        logger.logPA(values.toString());
         try {
             Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
             for (K key : values.keySet()) {

@@ -27,6 +27,8 @@ import org.graphdht.openchord.Message.MessageType;
  */
 public class DHTConnector<K extends Serializable, V extends Serializable> implements HTService<K, V>, Serializable {
 
+    public static long hitCounter = 0;
+
     public static void main(String[] args) {
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
         dc.connect();
@@ -37,7 +39,6 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
         System.out.println("put = " + put);
         put = dc.put(key, "cenass3");
         System.out.println("put = " + put);
-
         Serializable get = dc.get(key);
         System.out.println("get = " + get);
     }
@@ -103,26 +104,31 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
 
     @Override
     public V get(K key) {
+        hitCounter++;
         return (V) xchange(new Message(MessageType.GET, key));
     }
 
     @Override
     public V put(K key, V value) {
+        hitCounter++;
         return (V) xchange(new Message(MessageType.PUT, new Object[]{key, value}));
     }
 
     @Override
     public V remove(K key) {
+        hitCounter++;
         return (V) xchange(new Message(MessageType.REMOVE, key));
     }
 
     @Override
     public void putAll(Map<K, V> m) {
+        hitCounter++;
         xchange(new Message(MessageType.PUTALL, m));
     }
 
     @Override
     public Iterable<V> getAllValues() {
+        hitCounter++;
         return (Iterable<V>) xchange(new Message(MessageType.GETALL, null));
     }
 

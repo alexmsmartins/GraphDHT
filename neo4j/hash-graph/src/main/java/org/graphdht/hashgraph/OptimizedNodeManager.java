@@ -165,9 +165,9 @@ public class OptimizedNodeManager {
         OptimizedPrimitive rel = this.nodeAndRelMap.get(aLong);
         rel.setOptimizedNodeManager(this);
         OptimizedNode startNode = (OptimizedNode) this.getNodeById(
-                ((OptimizedRelationship)rel).getStartNode().getId());
+                ((OptimizedRelationship) rel).getStartNode().getId());
         OptimizedNode endNode = (OptimizedNode) this.getNodeById(
-                ((OptimizedRelationship)rel).getEndNode().getId());
+                ((OptimizedRelationship) rel).getEndNode().getId());
         startNode.deleteRelationship(aLong);
         endNode.deleteRelationship(aLong);
         //this.relationshipMap.remove(aLong);
