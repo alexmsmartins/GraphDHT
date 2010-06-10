@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import org.graphdht.hashgraph.Constants;
+import org.graphdht.hashgraph.OptimizedHashGraphDatabase;
 import org.graphdht.hashgraph.SimpleHashGraphDatabase;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -53,7 +54,10 @@ public class BenchmarkExecutor {
     private static FileOutputStream chordLogFile;
     private static boolean embebed = false;
     private static boolean simple = false;
-    private static boolean openchord = true;
+    private static boolean openchord = false;
+    private static boolean optimized_openchord = true;
+    private static boolean optimized = true;
+
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -119,6 +123,19 @@ public class BenchmarkExecutor {
             //
             //
             //
+            if (optimized) {
+                //--------------------SimpleHashGraphDatabase-simple--------------------//
+                // Not necessary to clean
+                mainLog("OptimizedHashGraphDatabase-simple\t" + testfile.getName());
+                service = new OptimizedHashGraphDatabase("simple");
+                duration = readFileIntoNeo(testfile, service);
+                mainLog("Duration: " + duration);
+                timesLog(testfile.getName() + "\tOptimizedHashGraphDatabase-optimized\t" + duration);
+                service.shutdown();
+            }
+            //
+            //
+            //
             if (openchord) {
                 //--------------------SimpleHashGraphDatabase-openchord--------------------//
                 mainLog("Please start new chord... and press enter...");
@@ -153,6 +170,44 @@ public class BenchmarkExecutor {
 //                // Shutdown Neo4J
                 service.shutdown();
             }
+            //
+            //
+            //
+            if (optimized_openchord) {
+                //--------------------OptimizedHashGraphDatabase-openchord--------------------//
+                mainLog("Please start new chord... and press enter...");
+                scanner.nextLine();
+//                // Initialize the chord processes
+//                procs[0] = new ProcessManager(cmdInit, 5000);
+//                for (int i = 1; i < NUMBER_OF_NODES; i++) {
+//                    procs[i] = new ProcessManager(cmdJoin + (5000 + i), 5000 + i);
+//                }
+//                mainLog("Waiting for chord to be ready...");
+//                try {
+//                    Thread.sleep(4000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                }
+//                mainLog("Chord ready...");
+
+                mainLog("OptimizedHashGraphDatabase-openchord\t" + testfile.getName());
+                service = new OptimizedHashGraphDatabase("openchord");
+                duration = readFileIntoNeo(testfile, service);
+                mainLog("Duration: " + duration);
+                timesLog(testfile.getName() + "\tOptimizedHashGraphDatabase-openchord\t" + duration);
+//                mainLog("Cleaning chord...");
+//                // Kill chord processes
+//                for (ProcessManager process : procs) {
+//                    process.kill();
+//                }
+//                for (ProcessManager process : procs) {
+//                    process.waitfinish();
+//                }
+//                mainLog("// Clean");
+//                // Shutdown Neo4J
+                service.shutdown();
+            }
+
         }
     }
 
