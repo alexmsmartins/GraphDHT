@@ -60,6 +60,7 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
 
         @Override
         public void run() {
+            System.out.println("DHTServer thread is spawning after receiving a socket");
             ObjectInputStream is;
             ObjectOutputStream os;
             try {
@@ -101,24 +102,28 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                     Object response = null;
                     switch (message.type) {
                         case GET:
+                            System.out.println("Chord received a GET request");
                             response = get((K) message.obj);
                             ;
                             break;
                         case PUT:
+                            System.out.println("Chord received a PUT request");
                             Object[] objects = (Object[]) message.obj;
                             response = put((K) objects[0], (V) objects[1]);
                             break;
                         case REMOVE:
+                            System.out.println("Chord received a REMOVE request");
                             response = remove((K) message.obj);
                             ;
                             break;
                         case PUTALL:
+                            System.out.println("Chord received a PUTALL request");
                             putAll((Map<K, V>) message.obj);
                             break;
                         case GETALL:
+                            System.out.println("Chord received a GETALL request");
                             response = getAllValues();
                             break;
-
                     }
                     try {
                         os.writeObject(response);

@@ -18,10 +18,13 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Scanner;
+
 import org.graphdht.hashgraph.Constants;
 import org.graphdht.hashgraph.SimpleHashGraphDatabase;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 /**
@@ -64,12 +67,19 @@ public class BenchmarkExecutor {
                 // @NUNO
                 // EmbeddedGraphDatabase does not work...
                 //--------------------EmbeddedGraphDatabase--------------------//
+                try {
+                    Runtime.getRuntime().exec("rm -drf var/");
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 mainLog(testfile + "\tEmbeddedGraphDatabase\t");
                 System.out.println("Clean old data...");
                 new File("var").delete(); // will delete the folder with the data...
                 System.out.println("cleaned...");
                 service = new EmbeddedGraphDatabase("var/test");
+                Transaction tx = service.beginTx();
                 duration = readFileIntoNeo(testfile, service);
+                tx.finish();
                 mainLog("Duration: " + duration);
                 timesLog(testfile.getName() + "\tEmbeddedGraphDatabase\t" + duration);
                 service.shutdown();
@@ -89,6 +99,11 @@ public class BenchmarkExecutor {
                 //
                 //
                 //--------------------SimpleHashGraphDatabase-openchord--------------------//
+                try {
+                    Runtime.getRuntime().exec("kill -9 `ps ax | grep openchord | awk '{print \\$1}'`");
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 mainLog("Start new chord...");
                 // Initialize the chord processes
                 procs[0] = new ProcessManager(CMD_INIT, 5000);
@@ -101,6 +116,9 @@ public class BenchmarkExecutor {
                 } catch (InterruptedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+                //System.out.println("Press any key after activating Chord nodes manually");
+                //Scanner scan = new Scanner(System.in);
+                //scan.nextLine();
                 mainLog("Chord ready...");
 
                 mainLog(testfile + "\tSimpleHashGraphDatabase-openchord\t");
@@ -160,18 +178,18 @@ public class BenchmarkExecutor {
                     }
                     return System.currentTimeMillis() - inititalTime;
                 }
-                line = line.substring(0, line.length() - 1); //excludes the ';' character
+                line = line.substring(0, line.length() /*- 1*/); //excludes the ';' character
                 String[] tokens = line.trim().split(" -- ");
                 previousNode = null;
                 for (String str : tokens) {
                     str = str.trim();
                     Long id = Long.parseLong(str);
-                    if (addedNodes.get(id) != null) {
-                        node = serv.getNodeById(id);
+                    if (addedNodes.containsKey(id)) {
+                        node = serv.getNodeById(addedNodes.get(id));
                     } else {
                         node = serv.createNode();
                         node.setProperty("id", id.toString());
-                        addedNodes.put(id, id);
+                        addedNodes.put(id, node.getId());
                     }
                     //add relationship between this node and the previous one
                     if (previousNode != null) {
