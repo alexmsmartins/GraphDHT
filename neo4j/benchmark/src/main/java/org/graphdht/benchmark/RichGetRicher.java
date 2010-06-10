@@ -119,10 +119,11 @@ public class RichGetRicher {
     Node getRandomNodeFrom(List<Node> graph) {
         int f = (int) (random.nextDouble() * totalDegree);
         int accumulator = 0;
-
-        for (Node node : graph) {
+        Node node;
+        for (int i= 0; i < graph.size() - 1; i++) {
+            node = graph.get(i);
             accumulator += node.degree;
-            if (accumulator > f) {
+            if (accumulator >= f) {
                 return node;
             }
         }
