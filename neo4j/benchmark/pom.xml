@@ -28,7 +28,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputDirectory>\\10.3.3.68\LSCS\</outputDirectory>
+                    <outputDirectory>\\10.3.3.191\LSCS\</outputDirectory>
                     <descriptorRefs>
                         <descriptorRef>
                             jar-with-dependencies

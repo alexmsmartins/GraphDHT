@@ -8,7 +8,6 @@ import org.graphdht.dht.HTService;
 import org.graphdht.hashcontainer.HTServiceFactory;
 import org.graphdht.hashcontainer.OptimizedHTServiceFactory;
 import org.graphdht.hashcontainer.SimpleHT;
-import org.graphdht.hashcontainer.SimpleHTServiceFactory;
 import org.graphdht.openchord.OpenChordHTServiceFactory;
 import org.neo4j.graphdb.*;
 import org.neo4j.kernel.impl.transaction.TransactionFailureException;
@@ -189,10 +188,10 @@ public class OptimizedNodeManager {
         }
     }
 
-    public Node deleteNode(Long aLong) {
+    public void deleteNode(Long aLong) {
         //return this.nodeMap.remove(aLong);
         //Node node = (Node) this.nodeAndRelMap.get(aLong); //confirms if this is really a node
-        return (Node) this.nodeAndRelMap.remove(aLong);
+        this.nodeAndRelMap.remove(aLong);
     }
 
     /**

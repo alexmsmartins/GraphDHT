@@ -17,7 +17,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.Map;
 import org.graphdht.dht.HTService;
-import org.graphdht.openchord.Message.MessageType;
+import static org.graphdht.openchord.DHTConstants.*;
 
 /**
  * Now this is the only copy of the file...
@@ -25,22 +25,20 @@ import org.graphdht.openchord.Message.MessageType;
  *
  * @author nuno
  */
-public class DHTConnector<K extends Serializable, V extends Serializable> implements HTService<K, V>, Serializable {
-
-    public static long hitCounter = 0;
+public class DHTConnector implements HTService<Long, Serializable>, Serializable {
 
     public static void main(String[] args) {
         DHTConnector dc = new DHTConnector("127.0.0.1", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
         dc.connect();
-        String key = "10000";
-        Serializable put = dc.put(key, "cenass1");
-        System.out.println("put = " + put);
-        put = dc.put(key, "cenass2");
-        System.out.println("put = " + put);
-        put = dc.put(key, "cenass3");
-        System.out.println("put = " + put);
+        long key = 10000;
+        dc.put(key, "cenass1");
         Serializable get = dc.get(key);
         System.out.println("get = " + get);
+        dc.put(key, "cenass2");
+        dc.put(key, "cenass3");
+        get = dc.get(key);
+        System.out.println("get = " + get);
+
     }
     /**
      *
@@ -54,7 +52,7 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
     private ObjectOutputStream os;
 
     public DHTConnector() {
-        this("10.3.3.68", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
+        this("10.3.3.191", DHTConstants.GDHT_OPENCHORD_SERVER_ADD + DHTConstants.GDHT_OPENCHORD_I_PORT);
     }
 
     public DHTConnector(String host, int port) {
@@ -81,55 +79,59 @@ public class DHTConnector<K extends Serializable, V extends Serializable> implem
             this.socket = null;
             this.is = null;
             this.os = null;
-        } catch (IOException ex) {
-            System.out.println("Error releasing: " + ex);
+        } catch (Exception ex) {
         }
     }
 
-    public Object xchange(Message m) {
-        while (true) {
-            try {
-                os.writeObject(m);
-                Object read = is.readObject();
-                return read;
-            } catch (Exception ex) {
-                System.out.println("Reconnecting...");
-                //TODO: Better exception handling code...
-                release();
-                connect();
-            }
+    public void oneway(Message m) {
+        try {
+            os.writeObject(m);
+        } catch (Exception ex) {
+            System.out.println("Reconnecting...");
+            //TODO: Better exception handling code...
+            release();
+            connect();
         }
-
     }
 
     @Override
-    public V get(K key) {
-        hitCounter++;
-        return (V) xchange(new Message(MessageType.GET, key));
+    public Serializable get(Long key) {
+
+        try {
+            os.writeObject(new Message(GET, key, null));
+            byte[] read = (byte[]) is.readObject();
+            return (Serializable) DHTConstants.toObject(read);
+        } catch (Exception ex) {
+            System.out.println("Reconnecting...");
+            //TODO: Better exception handling code...
+            release();
+            connect();
+        }
+        return null;
     }
 
     @Override
-    public V put(K key, V value) {
-        hitCounter++;
-        return (V) xchange(new Message(MessageType.PUT, new Object[]{key, value}));
+    public void put(Long key, Serializable value) {
+
+        oneway(new Message(PUT, key, toByteArray(value)));
     }
 
     @Override
-    public V remove(K key) {
-        hitCounter++;
-        return (V) xchange(new Message(MessageType.REMOVE, key));
+    public void remove(Long key) {
+
+        oneway(new Message(REMOVE, key, null));
     }
 
     @Override
-    public void putAll(Map<K, V> m) {
-        hitCounter++;
-        xchange(new Message(MessageType.PUTALL, m));
+    public void putAll(Map<Long, Serializable> m) {
+
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Iterable<V> getAllValues() {
-        hitCounter++;
-        return (Iterable<V>) xchange(new Message(MessageType.GETALL, null));
+    public Iterable<Serializable> getAllValues() {
+
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

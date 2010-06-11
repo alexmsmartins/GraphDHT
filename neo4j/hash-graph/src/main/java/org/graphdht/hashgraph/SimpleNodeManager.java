@@ -164,9 +164,9 @@ public class SimpleNodeManager {
         SimplePrimitive rel = this.nodeAndRelMap.get(aLong);
         rel.setSimpleNodeManager(this);
         SimpleNode startNode = (SimpleNode) this.getNodeById(
-                ((SimpleRelationship)rel).getStartNode().getId());
+                ((SimpleRelationship) rel).getStartNode().getId());
         SimpleNode endNode = (SimpleNode) this.getNodeById(
-                ((SimpleRelationship)rel).getEndNode().getId());
+                ((SimpleRelationship) rel).getEndNode().getId());
         startNode.deleteRelationship(aLong);
         endNode.deleteRelationship(aLong);
         //this.relationshipMap.remove(aLong);
@@ -188,10 +188,10 @@ public class SimpleNodeManager {
         }
     }
 
-    public Node deleteNode(Long aLong) {
+    public void deleteNode(Long aLong) {
         //return this.nodeMap.remove(aLong);
         //Node node = (Node) this.nodeAndRelMap.get(aLong); //confirms if this is really a node
-        return (Node) this.nodeAndRelMap.remove(aLong);
+        this.nodeAndRelMap.remove(aLong);
     }
 
     /**

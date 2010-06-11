@@ -59,7 +59,7 @@
         <copy todir="../neo4j/benchmark/bin/" >
             <fileset dir="bin" />
         </copy>
-        <copy todir="\\10.3.3.68\LSCS\bin" >
+        <copy todir="\\10.3.3.191\LSCS\bin" >
             <fileset dir="bin" />
         </copy>
     </target>

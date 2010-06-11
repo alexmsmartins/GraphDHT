@@ -26,7 +26,7 @@ public class OpenChordHTServiceFactory<V extends Serializable> implements HTServ
 
     @Override
     public HTService createHTService() {
-        DHTConnector service = new DHTConnector<Long, V>();
+        DHTConnector service = new DHTConnector();
         service.connect();
         return service;
     }

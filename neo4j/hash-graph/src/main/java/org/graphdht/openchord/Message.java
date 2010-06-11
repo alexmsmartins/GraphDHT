@@ -13,25 +13,19 @@ package org.graphdht.openchord;
 import java.io.Serializable;
 
 /**
+ * Very simple message to be send through the network
  *
- * @author nuno
+ * @author nmsa@dei.uc.pt
  */
 public class Message implements Serializable {
 
-    public enum MessageType implements Serializable {
+    public short type;
+    public long key;
+    public byte[] byteArray;
 
-        GET, PUT, REMOVE, PUTALL, GETALL
-    }
-    public MessageType type;
-    public Object obj;
-
-    public Message(MessageType type, Object obj) {
+    public Message(short type, long key, byte[] byteArray) {
         this.type = type;
-        this.obj = obj;
-    }
-
-    @Override
-    public String toString() {
-        return type + " > " + obj;
+        this.key = key;
+        this.byteArray = byteArray;
     }
 }

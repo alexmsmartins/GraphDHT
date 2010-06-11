@@ -43,7 +43,7 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
     }
 
     public Iterable<Relationship> getRelationships() {
-        return (Iterable<Relationship>)this.relationships;
+        return (Iterable<Relationship>) this.relationships;
     }
 
     public boolean hasRelationship() {
@@ -81,10 +81,10 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
                 return this.getRelationships();
             } else {
                 for (Relationship rel : relationships) {
-                    if ( (((OptimizedRelationship)rel).getStartNodeId() == this.getId()) &&
-                         dir == Direction.OUTGOING) {
+                    if ((((OptimizedRelationship) rel).getStartNodeId() == this.getId())
+                            && dir == Direction.OUTGOING) {
                         c.add(rel);
-                    } else if ((((OptimizedRelationship)rel).getEndNodeId() == this.getId()) && dir == Direction.INCOMING) {
+                    } else if ((((OptimizedRelationship) rel).getEndNodeId() == this.getId()) && dir == Direction.INCOMING) {
                         c.add(rel);
                     }
                 }
@@ -99,11 +99,11 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
                 return true;
             } else {
                 for (Relationship rel : relationships) {
-                    if ( (((OptimizedRelationship)rel).getStartNodeId() == this.getId()) &&
-                         dir == Direction.OUTGOING) {
+                    if ((((OptimizedRelationship) rel).getStartNodeId() == this.getId())
+                            && dir == Direction.OUTGOING) {
                         return true;
-                    } else if ( (((OptimizedRelationship)rel).getEndNodeId() == this.getId()) && 
-                                dir == Direction.INCOMING) {
+                    } else if ((((OptimizedRelationship) rel).getEndNodeId() == this.getId())
+                            && dir == Direction.INCOMING) {
                         return true;
                     }
                 }
@@ -120,11 +120,11 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
             } else {
                 for (Relationship rel : relationships) {
                     if (rel.getType() == type) {
-                        if ( ((OptimizedRelationship)rel).getStartNodeId() == this.getId() &&
-                             dir == Direction.OUTGOING) {
+                        if (((OptimizedRelationship) rel).getStartNodeId() == this.getId()
+                                && dir == Direction.OUTGOING) {
                             c.add(rel);
-                        } else if ( ((OptimizedRelationship)rel).getEndNodeId() == this.getId() &&
-                                    dir == Direction.INCOMING) {
+                        } else if (((OptimizedRelationship) rel).getEndNodeId() == this.getId()
+                                && dir == Direction.INCOMING) {
                             c.add(rel);
                         }
                     }
@@ -141,11 +141,11 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
             } else {
                 for (Relationship rel : relationships) {
                     if (rel.getType() == type) {
-                        if ( ((OptimizedRelationship)rel).getStartNodeId() == this.getId() &&
-                             dir == Direction.OUTGOING) {
+                        if (((OptimizedRelationship) rel).getStartNodeId() == this.getId()
+                                && dir == Direction.OUTGOING) {
                             return true;
-                        } else if( ((OptimizedRelationship)rel).getEndNodeId() == this.getId() &&
-                                   dir == Direction.INCOMING) {
+                        } else if (((OptimizedRelationship) rel).getEndNodeId() == this.getId()
+                                && dir == Direction.INCOMING) {
                             return true;
                         }
                     }
@@ -166,11 +166,11 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
             } else {
                 for (Relationship rel : relationships) {
                     if (rel.getType() == type) {
-                        if ( ((OptimizedRelationship)rel).getStartNodeId() == this.getId() &&
-                             dir == Direction.OUTGOING) {
+                        if (((OptimizedRelationship) rel).getStartNodeId() == this.getId()
+                                && dir == Direction.OUTGOING) {
                             return rel;
-                        } else if ( ((OptimizedRelationship)rel).getEndNodeId() == this.getId() &&
-                                    dir == Direction.INCOMING) {
+                        } else if (((OptimizedRelationship) rel).getEndNodeId() == this.getId()
+                                && dir == Direction.INCOMING) {
                             return rel;
                         }
                     }
@@ -185,8 +185,8 @@ public class OptimizedNode extends OptimizedPrimitive implements Node, Serializa
         Iterable<Relationship> relIt = this.getRelationships(type, Direction.OUTGOING);
         //check if there are previous relationships
         for (Relationship rel : relationships) {
-            if ( ((OptimizedRelationship)rel).getEndNodeId() == otherNode.getId() &&
-                 rel.getType() == type) {
+            if (((OptimizedRelationship) rel).getEndNodeId() == otherNode.getId()
+                    && rel.getType() == type) {
                 return rel; //returns an existing relationship instead of creating a new one
             }
         }

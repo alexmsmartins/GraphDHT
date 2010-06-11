@@ -45,8 +45,8 @@ import org.neo4j.kernel.EmbeddedGraphDatabase;
  * invoked in a {@link Transaction transactional context}. Failure to do so will
  * result in a {@link NotInTransactionException} being thrown.
  */
-public interface GraphDatabaseService
-{
+public interface GraphDatabaseService {
+
     /**
      * Creates a new node.
      * 
@@ -61,7 +61,7 @@ public interface GraphDatabaseService
      * @return the node with id <code>id</code> if found
      * @throws NotFoundException if not found
      */
-    public Node getNodeById( long id );
+    public Node getNodeById(long id);
 
     /**
      * Looks up a relationship by id.
@@ -70,7 +70,7 @@ public interface GraphDatabaseService
      * @return the relationship with id <code>id</code> if found
      * @throws NotFoundException if not found
      */
-    public Relationship getRelationshipById( long id );
+    public Relationship getRelationshipById(long id);
 
     /**
      * Returns the reference node, which is a "starting point" in the node
@@ -160,7 +160,7 @@ public interface GraphDatabaseService
      *             remote shell can't be enabled anyway
      */
     public boolean enableRemoteShell(
-            Map<String, Serializable> initialProperties );
+            Map<String, Serializable> initialProperties);
 
     /**
      * Starts a new transaction and associates it with the current thread.

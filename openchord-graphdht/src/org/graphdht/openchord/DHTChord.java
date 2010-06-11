@@ -74,14 +74,12 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
     }
 
     @Override
-    public Serializable put(DHTKey key, Serializable value) {
+    public void put(DHTKey key, Serializable value) {
         // check parameters
         if (key == null || value == null) {
             throw new NullPointerException(
                     "Neither parameter may have value null!");
         }
-
-        Serializable oldValue = null;
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
         Entry entryToInsert = new Entry(id, value);
@@ -98,7 +96,6 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
                 while (!entries.isEmpty()) {
                     Entry t = entries.iterator().next();
                     if (t != null) {
-                        oldValue = t.getValue();
                         entries.remove(t);
                     }
                 }
@@ -109,16 +106,14 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
                 continue;
             }
         }
-        return oldValue;
     }
 
     @Override
-    public Serializable remove(DHTKey key) {
+    public void remove(DHTKey key) {
         // check parameters
         if (key == null) {
             throw new NullPointerException("The parameter cannot have value null!");
         }
-        Serializable oldValue = null;
         // determine ID for key
         ID id = this.hashFunction.getHashKey(key);
         boolean inserted = false;
@@ -133,7 +128,6 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
                 while (!entries.isEmpty()) {
                     Entry t = entries.iterator().next();
                     if (t != null) {
-                        oldValue = t.getValue();
                         entries.remove(t);
                     }
                 }
@@ -141,7 +135,6 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
                 continue;
             }
         }
-        return oldValue;
     }
 
     @Override
@@ -154,6 +147,10 @@ public class DHTChord extends ChordImpl implements HTService<DHTKey, Serializabl
     @Override
     public Iterable<Serializable> getAllValues() {
         return null;
+    }
+
+    @Override
+    public void shutdown() {
     }
 }
 

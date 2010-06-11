@@ -34,13 +34,15 @@ import static org.graphdht.openchord.DHTConstants.*;
  * @param <V>
  * @author nmsa@dei.uc.pt
  */
-public class DHTServer<K extends Serializable, V extends Serializable> implements HTService<K, V> {
+public class DHTServer implements HTService<Long, byte[]> {
 
     private final DHTChord chord;
     private final int port;
     private Logger logger;
-    private long comunication;
-    private long working;
+    private long comTime;
+    private long worTime;
+    private long comCount = 0;
+    private long worCount = 0;
 
     public DHTServer(DHTChord chord) {
         super();
@@ -63,11 +65,8 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
         private boolean running = true;
         private StringBuffer buffer;
         private int p;
-        private int r;
         private int g;
-        private int ga;
-        private int pa;
-        private String last = "Moelix :D";
+        private int other;
 
         private Logger() {
             running = true;
@@ -98,14 +97,12 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                     buffer = new StringBuffer(new Date().toString());
                     buffer.append("\n");
                 }
-                local.append("P:   ").append(p);
-                local.append("\nG:   ").append(g);
-                local.append("\nR:   ").append(r);
-                local.append("\nPA:  ").append(pa);
-                local.append("\nGA:  ").append(ga);
-                local.append("\nCOM: ").append(comunication);
-                local.append("\nWORK:").append(working).append("\n");
-                local.append("\nLast:").append(this.last).append("\n");
+                local.append("P     :").append(p);
+                local.append("\tG   :").append(g);
+                local.append("\tOT  :").append(other);
+                local.append("\tCOM :").append(comTime).append(" AVG:").append((double) comTime / (double) comCount);
+                local.append("\tWORK:").append(worTime).append(" AVG:").append((double) worTime / (double) worCount);
+                local.append("\n");
                 try {
                     logFile.write(local.toString().getBytes());
                 } catch (IOException io) {
@@ -118,29 +115,16 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
             buffer.append("\n");
         }
 
-        private void logR(String last) {
-            this.last = "R" + last;
-            r++;
-        }
-
         private void logG(String last) {
-            this.last = "G" + last;
             g++;
         }
 
         private void logP(String last) {
-            this.last = "P" + last;
             p++;
         }
 
-        private void logPA(String last) {
-            this.last = "PA" + last;
-            pa++;
-        }
-
-        private void logGA() {
-            this.last = "GA";
-            ga++;
+        private void logO() {
+            other++;
         }
     }
 
@@ -166,14 +150,14 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                 ex.printStackTrace();
                 return;
             }
-
             while (true) {
                 Message message = null;
                 try {
                     one = System.currentTimeMillis();
                     message = (Message) is.readObject();
                     two = System.currentTimeMillis();
-                    comunication += two - one;
+                    comTime += two - one;
+                    comCount++;
                 } catch (IOException ex) {
                     try {
                         socket.close();
@@ -190,101 +174,99 @@ public class DHTServer<K extends Serializable, V extends Serializable> implement
                         System.out.println(socket.getPort() + " CLOSED...");
                     }
                 } else {
-                    Object response = "null";
+                    byte[] response = null;
                     switch (message.type) {
                         case GET:
-                            response = get((K) message.obj);
+                            response = get(message.key);
+                            one = System.currentTimeMillis();
+                            worTime += one - two;
+                            worCount++;
+                            try {
+                                os.writeObject(response);
+                            } catch (IOException io) {
+                                io.printStackTrace();
+                            }
+                            two = System.currentTimeMillis();
+                            comTime += two - one;
+                            comCount++;
                             break;
                         case PUT:
-                            Object[] objects = (Object[]) message.obj;
-                            response = put((K) objects[0], (V) objects[1]);
+                            put(message.key, message.byteArray);
                             break;
                         case REMOVE:
-                            response = remove((K) message.obj);
+                            remove(message.key);
                             break;
                         case PUTALL:
-                            putAll((Map<K, V>) message.obj);
+                            putAll(null);
                             break;
                         case GETALL:
-                            response = getAllValues();
+                            getAllValues();
                             break;
                     }
-                    try {
-                        one = System.currentTimeMillis();
-                        working += one - two;
-                        os.writeObject(response);
-                        two = System.currentTimeMillis();
-                        comunication += two - one;
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    one = System.currentTimeMillis();
+                    worTime += one - two;
+                    worCount++;
                 }
             }
         }
     }
 
     @Override
-    public V get(K key) {
+    public byte[] get(Long key) {
         logger.logG(key.toString());
         try {
-            return (V) chord.get(new DHTKey(key)); // HERE
+            return (byte[]) chord.get(new DHTKey(key)); // HERE
         } catch (Exception e) {
             logger.logE(e);
             e.printStackTrace();
             return null;
-        } finally {
-            //  debug("DONE " + key);
         }
     }
 
     @Override
-    public V put(K key, V value) {
-        logger.logP(key.toString() + ":" + value.toString());
+    public void put(Long key, byte[] value) {
+        logger.logP(key.toString());
         try {
-            return (V) chord.put(new DHTKey(key), value);
+            chord.put(new DHTKey(key), value);
         } catch (Exception e) {
             logger.logE(e);
             e.printStackTrace();
-            return null;
-        } finally {
-            //  debug("DONE " + key);
         }
     }
 
     @Override
-    public V remove(K key) {
-        logger.logR(key.toString());
+    public void remove(Long key) {
+        logger.logO();
         try {
-            return (V) chord.remove(new DHTKey(key));
+            chord.remove(new DHTKey(key));
         } catch (Exception e) {
             logger.logE(e);
             e.printStackTrace();
-            return null;
-        } finally {
-            //  debug("DONE " + key);
         }
     }
 
     @Override
-    public void putAll(Map<K, V> values) {
-        logger.logPA(values.toString());
+    public void putAll(Map<Long, byte[]> values) {
+        logger.logO();
         try {
             Map<DHTKey, Serializable> map = new HashMap<DHTKey, Serializable>();
-            for (K key : values.keySet()) {
+            for (Long key : values.keySet()) {
                 map.put(new DHTKey(key), values.get(key));
             }
             chord.putAll(map);
         } catch (Exception e) {
             logger.logE(e);
             e.printStackTrace();
-        } finally {
-            //  debug("DONE " + values);
         }
     }
 
     @Override
-    public Iterable<V> getAllValues() {
-        logger.logGA();
+    public Iterable<byte[]> getAllValues() {
+        logger.logO();
         return null;
+    }
+
+    @Override
+    public void shutdown() {
     }
 }

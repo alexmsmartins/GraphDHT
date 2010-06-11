@@ -71,7 +71,7 @@ public interface HTService<K, V> {
      * @throws IllegalArgumentException if some property of the specified key
      *         or value prevents it from being stored in this map
      */
-    public V put(K key, V value);
+    public void put(K key, V value);
 
     /**
      * Removes the mapping for a key from this map if it is present
@@ -101,7 +101,7 @@ public interface HTService<K, V> {
      * @throws NullPointerException if the specified key is null and this
      *         map does not permit null keys (optional)
      */
-    public V remove(K key);
+    public void remove(K key);
 
     /**
      * Copies all of the mappings from the specified map to this map
@@ -128,7 +128,7 @@ public interface HTService<K, V> {
 
     /**
      * Closes and/or frees all resources related to this implementation of a Hashtable
-     * This is useful especially when implementing distributed versions of this interface 
+     * This is useful especially when implementing distributed versions of this interface
      */
     public void shutdown();
 }
